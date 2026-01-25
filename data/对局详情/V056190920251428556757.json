@@ -1,0 +1,620 @@
+{
+  "match_id": "V056190920251428556757",
+  "data": {
+    "matchId": "V056190920251428556757",
+    "startAt": 1758292114024,
+    "endAt": 1758292876364,
+    "map": 7,
+    "mode": 5,
+    "winningFaction": 2,
+    "playerData": {
+      "KBckO0FPtDSOhQe99I2eDeMicT92": {
+        "userId": "KBckO0FPtDSOhQe99I2eDeMicT92",
+        "nickname": "汉堡",
+        "role": 96,
+        "faction": 3,
+        "teamId": -1,
+        "win": false,
+        "isGhost": true,
+        "disconnected": false,
+        "deadAt": 1758292704409,
+        "kills": 0,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 0,
+        "turnsSurvived": 3
+      },
+      "YADggFJXp5XA8cxMGIB9NMVZ3By1": {
+        "userId": "YADggFJXp5XA8cxMGIB9NMVZ3By1",
+        "nickname": "观察自由",
+        "role": 3,
+        "faction": 3,
+        "teamId": -1,
+        "win": false,
+        "isGhost": true,
+        "disconnected": true,
+        "deadAt": 1758292167451,
+        "kills": 0,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 0,
+        "turnsSurvived": 2
+      },
+      "tvNR6ftWjag437qQqMwuvFW7Vrf2": {
+        "userId": "tvNR6ftWjag437qQqMwuvFW7Vrf2",
+        "nickname": "大鱼",
+        "role": 13,
+        "faction": 1,
+        "teamId": -1,
+        "win": false,
+        "isGhost": true,
+        "disconnected": false,
+        "deadAt": 1758292694085,
+        "kills": 0,
+        "tasks": 3,
+        "sabotages": 0,
+        "discussions": 1,
+        "correctVotes": 2,
+        "turnsSurvived": 3
+      },
+      "4Suokyjhp1VSgQajJwlCveqeZKp1": {
+        "userId": "4Suokyjhp1VSgQajJwlCveqeZKp1",
+        "nickname": "苟在一群坏鸭身边当陈呆萌的严父",
+        "role": 87,
+        "faction": 1,
+        "teamId": -1,
+        "win": false,
+        "isGhost": true,
+        "disconnected": false,
+        "deadAt": 1758292876018,
+        "kills": 0,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 1,
+        "correctVotes": 2,
+        "turnsSurvived": 3
+      },
+      "nrOTnuVhjrZU7jCczqjGCPA83nm2": {
+        "userId": "nrOTnuVhjrZU7jCczqjGCPA83nm2",
+        "nickname": "姐姐",
+        "role": 33,
+        "faction": 2,
+        "teamId": -1,
+        "win": true,
+        "isGhost": false,
+        "disconnected": false,
+        "deadAt": 0,
+        "kills": 3,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 0,
+        "turnsSurvived": 3
+      },
+      "etcuivikBFV2epFXWtg0RNpzEDm1": {
+        "userId": "etcuivikBFV2epFXWtg0RNpzEDm1",
+        "nickname": "洛",
+        "role": 104,
+        "faction": 2,
+        "teamId": -1,
+        "win": true,
+        "isGhost": false,
+        "disconnected": false,
+        "deadAt": 0,
+        "kills": 2,
+        "tasks": 0,
+        "sabotages": 2,
+        "discussions": 0,
+        "correctVotes": 0,
+        "turnsSurvived": 3
+      },
+      "8leGa83iKCXEIoLQsUHBxH9T9rl1": {
+        "userId": "8leGa83iKCXEIoLQsUHBxH9T9rl1",
+        "nickname": "多多",
+        "role": 61,
+        "faction": 1,
+        "teamId": -1,
+        "win": false,
+        "isGhost": false,
+        "disconnected": false,
+        "deadAt": 0,
+        "kills": 0,
+        "tasks": 1,
+        "sabotages": 0,
+        "discussions": 1,
+        "correctVotes": 3,
+        "turnsSurvived": 3
+      },
+      "fGogRF2GFeNDGMmNrL5hEqFLzY22": {
+        "userId": "fGogRF2GFeNDGMmNrL5hEqFLzY22",
+        "nickname": "搞点kfc778",
+        "role": 20,
+        "faction": 1,
+        "teamId": -1,
+        "win": false,
+        "isGhost": true,
+        "disconnected": false,
+        "deadAt": 1758292715495,
+        "kills": 1,
+        "tasks": 3,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 2,
+        "turnsSurvived": 3
+      },
+      "JGKKr1oxxKQtn5PqgtVrOcHwcFx2": {
+        "userId": "JGKKr1oxxKQtn5PqgtVrOcHwcFx2",
+        "nickname": "总被男人欺骗",
+        "role": 50,
+        "faction": 1,
+        "teamId": -1,
+        "win": false,
+        "isGhost": true,
+        "disconnected": false,
+        "deadAt": 1758292535107,
+        "kills": 0,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 1,
+        "turnsSurvived": 3
+      },
+      "VFJSbz504UVt8Fe3bmrdq4R4J9m2": {
+        "userId": "VFJSbz504UVt8Fe3bmrdq4R4J9m2",
+        "nickname": "丁又丁不懂",
+        "role": 31,
+        "faction": 1,
+        "teamId": -1,
+        "win": false,
+        "isGhost": true,
+        "disconnected": false,
+        "deadAt": 1758292672416,
+        "kills": 0,
+        "tasks": 8,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 1,
+        "turnsSurvived": 3
+      },
+      "S4bJXCmHS3eOvaxPNOSLl4ebOgv1": {
+        "userId": "S4bJXCmHS3eOvaxPNOSLl4ebOgv1",
+        "nickname": "兰州流泪面",
+        "role": 8,
+        "faction": 1,
+        "teamId": -1,
+        "win": false,
+        "isGhost": true,
+        "disconnected": false,
+        "deadAt": 1758292553309,
+        "kills": 1,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 0,
+        "turnsSurvived": 3
+      },
+      "NKssxxxFsOXXhGoxUjaD0xHn0cu2": {
+        "userId": "NKssxxxFsOXXhGoxUjaD0xHn0cu2",
+        "nickname": "铁柱",
+        "role": 21,
+        "faction": 3,
+        "teamId": -1,
+        "win": false,
+        "isGhost": false,
+        "disconnected": false,
+        "deadAt": 0,
+        "kills": 0,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 0,
+        "turnsSurvived": 3
+      },
+      "MsKiIuLu11VxxVGNduIQAQxJcTl1": {
+        "userId": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+        "nickname": "斜又斜不会",
+        "role": 52,
+        "faction": 2,
+        "teamId": -1,
+        "win": true,
+        "isGhost": true,
+        "disconnected": false,
+        "deadAt": 1758292633370,
+        "kills": 1,
+        "tasks": 3,
+        "sabotages": 2,
+        "discussions": 0,
+        "correctVotes": 0,
+        "turnsSurvived": 2
+      },
+      "kbSVyXt543bLjGkTiT1M8XGO0vf1": {
+        "userId": "kbSVyXt543bLjGkTiT1M8XGO0vf1",
+        "nickname": "世界第一好鹅陈呆萌爸爸",
+        "role": 11,
+        "faction": 1,
+        "teamId": -1,
+        "win": false,
+        "isGhost": true,
+        "disconnected": false,
+        "deadAt": 1758292715449,
+        "kills": 1,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 2,
+        "turnsSurvived": 3
+      }
+    },
+    "rounds": [
+      {
+        "startAt": 1758292114024,
+        "endAt": 1758292523104,
+        "meetingInfo": {
+          "starter": "tvNR6ftWjag437qQqMwuvFW7Vrf2",
+          "type": "Report",
+          "startTime": 1758292168284,
+          "votes": {
+            "KBckO0FPtDSOhQe99I2eDeMicT92": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+            "tvNR6ftWjag437qQqMwuvFW7Vrf2": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+            "4Suokyjhp1VSgQajJwlCveqeZKp1": "skip",
+            "nrOTnuVhjrZU7jCczqjGCPA83nm2": "skip",
+            "etcuivikBFV2epFXWtg0RNpzEDm1": "etcuivikBFV2epFXWtg0RNpzEDm1",
+            "8leGa83iKCXEIoLQsUHBxH9T9rl1": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+            "fGogRF2GFeNDGMmNrL5hEqFLzY22": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+            "JGKKr1oxxKQtn5PqgtVrOcHwcFx2": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+            "VFJSbz504UVt8Fe3bmrdq4R4J9m2": "skip",
+            "S4bJXCmHS3eOvaxPNOSLl4ebOgv1": "skip",
+            "NKssxxxFsOXXhGoxUjaD0xHn0cu2": "skip",
+            "MsKiIuLu11VxxVGNduIQAQxJcTl1": "skip",
+            "kbSVyXt543bLjGkTiT1M8XGO0vf1": "MsKiIuLu11VxxVGNduIQAQxJcTl1"
+          },
+          "result": "tie"
+        },
+        "timeline": [
+          {
+            "timestamp": 1758292130117,
+            "type": 1027,
+            "uid": "NKssxxxFsOXXhGoxUjaD0xHn0cu2",
+            "targetId": "VFJSbz504UVt8Fe3bmrdq4R4J9m2"
+          },
+          {
+            "timestamp": 1758292137374,
+            "type": 1027,
+            "uid": "NKssxxxFsOXXhGoxUjaD0xHn0cu2",
+            "targetId": "KBckO0FPtDSOhQe99I2eDeMicT92"
+          },
+          {
+            "timestamp": 1758292153930,
+            "type": 1013,
+            "uid": "nrOTnuVhjrZU7jCczqjGCPA83nm2",
+            "targetId": "fGogRF2GFeNDGMmNrL5hEqFLzY22"
+          },
+          {
+            "timestamp": 1758292163935,
+            "type": 1014,
+            "uid": "fGogRF2GFeNDGMmNrL5hEqFLzY22",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292167451,
+            "type": 2,
+            "uid": "S4bJXCmHS3eOvaxPNOSLl4ebOgv1",
+            "targetId": "YADggFJXp5XA8cxMGIB9NMVZ3By1"
+          },
+          {
+            "timestamp": 1758292510044,
+            "type": 3,
+            "uid": "tie",
+            "targetId": ""
+          }
+        ]
+      },
+      {
+        "startAt": 1758292523104,
+        "endAt": 1758292636410,
+        "meetingInfo": {
+          "starter": "4Suokyjhp1VSgQajJwlCveqeZKp1",
+          "type": "Report",
+          "startTime": 1758292554328,
+          "votes": {
+            "KBckO0FPtDSOhQe99I2eDeMicT92": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+            "tvNR6ftWjag437qQqMwuvFW7Vrf2": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+            "4Suokyjhp1VSgQajJwlCveqeZKp1": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+            "nrOTnuVhjrZU7jCczqjGCPA83nm2": "skip",
+            "etcuivikBFV2epFXWtg0RNpzEDm1": "skip",
+            "8leGa83iKCXEIoLQsUHBxH9T9rl1": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+            "fGogRF2GFeNDGMmNrL5hEqFLzY22": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+            "VFJSbz504UVt8Fe3bmrdq4R4J9m2": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+            "NKssxxxFsOXXhGoxUjaD0xHn0cu2": "skip",
+            "MsKiIuLu11VxxVGNduIQAQxJcTl1": "skip",
+            "kbSVyXt543bLjGkTiT1M8XGO0vf1": "MsKiIuLu11VxxVGNduIQAQxJcTl1"
+          },
+          "result": "MsKiIuLu11VxxVGNduIQAQxJcTl1"
+        },
+        "timeline": [
+          {
+            "timestamp": 1758292523104,
+            "type": 1014,
+            "uid": "fGogRF2GFeNDGMmNrL5hEqFLzY22",
+            "targetId": "fGogRF2GFeNDGMmNrL5hEqFLzY22"
+          },
+          {
+            "timestamp": 1758292527697,
+            "type": 1014,
+            "uid": "fGogRF2GFeNDGMmNrL5hEqFLzY22",
+            "targetId": "etcuivikBFV2epFXWtg0RNpzEDm1"
+          },
+          {
+            "timestamp": 1758292532417,
+            "type": 1014,
+            "uid": "etcuivikBFV2epFXWtg0RNpzEDm1",
+            "targetId": "JGKKr1oxxKQtn5PqgtVrOcHwcFx2"
+          },
+          {
+            "timestamp": 1758292535107,
+            "type": 1015,
+            "uid": "nrOTnuVhjrZU7jCczqjGCPA83nm2",
+            "targetId": "JGKKr1oxxKQtn5PqgtVrOcHwcFx2"
+          },
+          {
+            "timestamp": 1758292537239,
+            "type": 1027,
+            "uid": "NKssxxxFsOXXhGoxUjaD0xHn0cu2",
+            "targetId": "kbSVyXt543bLjGkTiT1M8XGO0vf1"
+          },
+          {
+            "timestamp": 1758292544603,
+            "type": 1027,
+            "uid": "NKssxxxFsOXXhGoxUjaD0xHn0cu2",
+            "targetId": "KBckO0FPtDSOhQe99I2eDeMicT92"
+          },
+          {
+            "timestamp": 1758292551991,
+            "type": 1027,
+            "uid": "NKssxxxFsOXXhGoxUjaD0xHn0cu2",
+            "targetId": "fGogRF2GFeNDGMmNrL5hEqFLzY22"
+          },
+          {
+            "timestamp": 1758292553309,
+            "type": 2,
+            "uid": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+            "targetId": "S4bJXCmHS3eOvaxPNOSLl4ebOgv1"
+          },
+          {
+            "timestamp": 1758292623358,
+            "type": 3,
+            "uid": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+            "targetId": ""
+          }
+        ]
+      },
+      {
+        "startAt": 1758292636410,
+        "endAt": 1758292800355,
+        "meetingInfo": {
+          "starter": "8leGa83iKCXEIoLQsUHBxH9T9rl1",
+          "type": "Emergency",
+          "startTime": 1758292718369,
+          "votes": {
+            "4Suokyjhp1VSgQajJwlCveqeZKp1": "nrOTnuVhjrZU7jCczqjGCPA83nm2",
+            "nrOTnuVhjrZU7jCczqjGCPA83nm2": "skip",
+            "etcuivikBFV2epFXWtg0RNpzEDm1": "skip",
+            "8leGa83iKCXEIoLQsUHBxH9T9rl1": "nrOTnuVhjrZU7jCczqjGCPA83nm2",
+            "NKssxxxFsOXXhGoxUjaD0xHn0cu2": "skip"
+          },
+          "result": "skip"
+        },
+        "timeline": [
+          {
+            "timestamp": 1758292656389,
+            "type": 1027,
+            "uid": "NKssxxxFsOXXhGoxUjaD0xHn0cu2",
+            "targetId": "KBckO0FPtDSOhQe99I2eDeMicT92"
+          },
+          {
+            "timestamp": 1758292670723,
+            "type": 1027,
+            "uid": "NKssxxxFsOXXhGoxUjaD0xHn0cu2",
+            "targetId": "fGogRF2GFeNDGMmNrL5hEqFLzY22"
+          },
+          {
+            "timestamp": 1758292672416,
+            "type": 1002,
+            "uid": "VFJSbz504UVt8Fe3bmrdq4R4J9m2",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292672416,
+            "type": 2,
+            "uid": "etcuivikBFV2epFXWtg0RNpzEDm1",
+            "targetId": "VFJSbz504UVt8Fe3bmrdq4R4J9m2"
+          },
+          {
+            "timestamp": 1758292673075,
+            "type": 1013,
+            "uid": "nrOTnuVhjrZU7jCczqjGCPA83nm2",
+            "targetId": "tvNR6ftWjag437qQqMwuvFW7Vrf2"
+          },
+          {
+            "timestamp": 1758292679079,
+            "type": 1014,
+            "uid": "tvNR6ftWjag437qQqMwuvFW7Vrf2",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292694085,
+            "type": 1015,
+            "uid": "nrOTnuVhjrZU7jCczqjGCPA83nm2",
+            "targetId": "tvNR6ftWjag437qQqMwuvFW7Vrf2"
+          },
+          {
+            "timestamp": 1758292704409,
+            "type": 2,
+            "uid": "etcuivikBFV2epFXWtg0RNpzEDm1",
+            "targetId": "KBckO0FPtDSOhQe99I2eDeMicT92"
+          },
+          {
+            "timestamp": 1758292708269,
+            "type": 1013,
+            "uid": "nrOTnuVhjrZU7jCczqjGCPA83nm2",
+            "targetId": "fGogRF2GFeNDGMmNrL5hEqFLzY22"
+          },
+          {
+            "timestamp": 1758292715449,
+            "type": 2,
+            "uid": "fGogRF2GFeNDGMmNrL5hEqFLzY22",
+            "targetId": "kbSVyXt543bLjGkTiT1M8XGO0vf1"
+          },
+          {
+            "timestamp": 1758292715495,
+            "type": 2,
+            "uid": "kbSVyXt543bLjGkTiT1M8XGO0vf1",
+            "targetId": "fGogRF2GFeNDGMmNrL5hEqFLzY22"
+          },
+          {
+            "timestamp": 1758292787329,
+            "type": 3,
+            "uid": "skip",
+            "targetId": ""
+          }
+        ]
+      },
+      {
+        "startAt": 1758292800355,
+        "endAt": 1758292876364,
+        "meetingInfo": null,
+        "timeline": [
+          {
+            "timestamp": 1758292810902,
+            "type": 1027,
+            "uid": "NKssxxxFsOXXhGoxUjaD0xHn0cu2",
+            "targetId": "4Suokyjhp1VSgQajJwlCveqeZKp1"
+          },
+          {
+            "timestamp": 1758292844169,
+            "type": 1027,
+            "uid": "NKssxxxFsOXXhGoxUjaD0xHn0cu2",
+            "targetId": "nrOTnuVhjrZU7jCczqjGCPA83nm2"
+          },
+          {
+            "timestamp": 1758292852999,
+            "type": 1013,
+            "uid": "nrOTnuVhjrZU7jCczqjGCPA83nm2",
+            "targetId": "4Suokyjhp1VSgQajJwlCveqeZKp1"
+          },
+          {
+            "timestamp": 1758292861014,
+            "type": 1014,
+            "uid": "4Suokyjhp1VSgQajJwlCveqeZKp1",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292876018,
+            "type": 1015,
+            "uid": "nrOTnuVhjrZU7jCczqjGCPA83nm2",
+            "targetId": "4Suokyjhp1VSgQajJwlCveqeZKp1"
+          },
+          {
+            "timestamp": 1758292876364,
+            "type": 1,
+            "uid": "KBckO0FPtDSOhQe99I2eDeMicT92",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292876364,
+            "type": 1,
+            "uid": "YADggFJXp5XA8cxMGIB9NMVZ3By1",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292876364,
+            "type": 1,
+            "uid": "tvNR6ftWjag437qQqMwuvFW7Vrf2",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292876364,
+            "type": 1,
+            "uid": "4Suokyjhp1VSgQajJwlCveqeZKp1",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292876364,
+            "type": 0,
+            "uid": "nrOTnuVhjrZU7jCczqjGCPA83nm2",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292876364,
+            "type": 0,
+            "uid": "etcuivikBFV2epFXWtg0RNpzEDm1",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292876364,
+            "type": 1,
+            "uid": "8leGa83iKCXEIoLQsUHBxH9T9rl1",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292876364,
+            "type": 1,
+            "uid": "fGogRF2GFeNDGMmNrL5hEqFLzY22",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292876364,
+            "type": 1,
+            "uid": "JGKKr1oxxKQtn5PqgtVrOcHwcFx2",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292876364,
+            "type": 1,
+            "uid": "VFJSbz504UVt8Fe3bmrdq4R4J9m2",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292876364,
+            "type": 1,
+            "uid": "S4bJXCmHS3eOvaxPNOSLl4ebOgv1",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292876364,
+            "type": 1,
+            "uid": "NKssxxxFsOXXhGoxUjaD0xHn0cu2",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292876364,
+            "type": 0,
+            "uid": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292876364,
+            "type": 1,
+            "uid": "kbSVyXt543bLjGkTiT1M8XGO0vf1",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292876364,
+            "type": 1,
+            "uid": "Wv1Rx6bbTCfwFiW9nKRfS68ZAQ83",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758292876364,
+            "type": 1,
+            "uid": "ALsqZzRbG3bq3ebvJufaObgnKUu1",
+            "targetId": ""
+          }
+        ]
+      }
+    ],
+    "gameModeData": null
+  }
+}

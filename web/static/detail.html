@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>木泗鹅鸭杀查询器 · 对局详情</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --main: #46a6f8;
+      --bg: #0e0a1a;
+      --card: #1b1430;
+      --text: #ffffff;
+      --muted: #8b89a3;
+      --accent-grad: linear-gradient(90deg, #00a6ff 0%, #c369ff 52%, #ff4590 100%);
+    }
+    * { box-sizing: border-box; margin:0; padding:0; }
+    body { font-family: 'Inter','Microsoft YaHei',sans-serif; color: var(--text); background: radial-gradient(1200px 600px at 10% 10%, rgba(70,166,248,0.15), transparent 60%), radial-gradient(1000px 500px at 90% 20%, rgba(255,69,144,0.12), transparent 60%), radial-gradient(900px 600px at 20% 90%, rgba(195,105,255,0.12), transparent 60%), var(--bg); min-height: 100vh; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 28px 18px 60px; }
+    .header { display:flex; align-items:center; justify-content:space-between; margin-bottom: 18px; }
+    .title { font-size: 24px; background: var(--accent-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .back { color: var(--text); text-decoration:none; opacity:.8; padding:8px 12px; border-radius:10px; background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08); }
+    .back:hover { opacity: 1; }
+
+    .card { background: rgba(27,20,48,.66); border:1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.03) inset; backdrop-filter: blur(8px); }
+    .grid { display:grid; grid-template-columns: 1.2fr .8fr; gap: 18px; }
+    .summary { display:flex; align-items:center; gap:14px; margin-bottom: 14px; }
+    .role { font-weight:700; font-size:22px; }
+    .tag { display:inline-block; padding:4px 10px; border-radius: 999px; font-size: 12px; font-weight:700; }
+    .win { background:#10b981; color:#fff; }
+    .loss { background:#ef4444; color:#fff; }
+    .meta { color: var(--muted); font-size: 14px; display:flex; gap:14px; flex-wrap: wrap; }
+
+    .kv { display:grid; grid-template-columns: 140px 1fr; row-gap:10px; column-gap: 10px; }
+    .k { color: var(--muted); }
+    .v { color: var(--text); }
+
+    .section { margin-top:20px; }
+    .section h3 { font-size:16px; color:#c8c6dc; margin-bottom:10px; }
+    .placeholder { color: var(--muted); font-size: 14px; background: rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px; }
+
+    .hidden { display:none; }
+
+    /* players table */
+    table.players-table { width: 100%; border-collapse: collapse; background: rgba(27,20,48,.66); border-radius: 12px; overflow: hidden; margin-top: 14px; border:1px solid rgba(255,255,255,0.06); }
+    .players-table th { background: rgba(70, 166, 248, 0.18); color: #cde8ff; padding: 12px 14px; text-align: left; font-weight: 600; font-size: 14px; }
+    .players-table td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 14px; color: #fff; }
+    .players-table tr:hover { background: rgba(70,166,248,0.08); }
+    .players-table tr:last-child td { border-bottom: none; }
+    .player-cell { display:flex; align-items:center; gap:10px; }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,#00a6ff,#c369ff); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:12px; flex: 0 0 32px; position: relative; overflow: hidden; }
+    .avatar img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .player-name { color:#fff; }
+
+    /* rounds section */
+    .rounds { margin-top: 22px; }
+    .round-box { background: rgba(27,20,48,.5); border:1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+    .round-title { font-weight: 700; color:#cde8ff; margin-bottom: 8px; text-align: center; }
+    table.subtable { width: 100%; border-collapse: collapse; background: rgba(27,20,48,.66); border-radius: 10px; overflow: hidden; border:1px solid rgba(255,255,255,0.06); margin-top: 8px; table-layout: fixed; }
+    .subtable th { background: rgba(70, 166, 248, 0.18); color: #cde8ff; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 13px; }
+    .subtable th.center { text-align: center; }
+    .subtable td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 13px; color: #fff; }
+    .subtable tr:last-child td { border-bottom: none; }
+    .center { text-align: center; }
+    /* timeline sides */
+    .player-cell-left, .player-cell-right { display:flex; align-items:center; gap:10px; width: 100%; }
+    .player-cell-left { justify-content: flex-end; }
+    .player-cell-right { justify-content: flex-start; }
+    .name-role { display:inline-block; max-width: calc(100% - 42px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; }
+    /* meeting grid */
+    .meeting-grid { display: grid; gap: 8px; justify-content: center; }
+    .avatar.muted { filter: grayscale(1); opacity: .45; }
+    .avatar.placeholder { visibility: hidden; }
+    .meeting-rows { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+    .avatar.speaker { box-shadow: 0 0 0 1px rgba(255,255,255,0.15); overflow: visible; }
+    .avatar.speaker::before { content: none; }
+    .avatar.speaker::after { content: ''; position: absolute; top: -6px; right: -6px; width: 16px; height: 16px; background: transparent url('../assets/role_logos/icon-reported.png') no-repeat center center; background-size: contain; opacity: .85; filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)); z-index: 3; }
+    /* endgame champion (trophy) overlay */
+    .avatar.trophy { overflow: visible; }
+    .avatar.trophy::after { content: ''; position: absolute; top: -6px; right: -6px; width: 16px; height: 16px; background: transparent url('../assets/role_logos/icon-trophy.png') no-repeat center center; background-size: contain; filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)); z-index: 3; }
+    .avatar.speaker:hover::after { opacity: .85; }
+    .avatar.inline { display: inline-flex; }
+    .meeting-result { margin-top: 10px; text-align: center; color: #fff; font-size: 14px; }
+    .meeting-result .label { margin-left: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="title">🦆 木泗鹅鸭杀查询器 · 对局详情</div>
+      <a id="backLink" href="#" class="back">← 返回记录列表</a>
+    </div>
+
+    <div class="card">
+      <div class="summary">
+        <div class="role" id="role">-</div>
+        <span id="resultTag" class="tag">-</span>
+      </div>
+      <div class="meta">
+        <div>模式：<span id="mode">-</span></div>
+        <div>地图：<span id="map">-</span></div>
+        <div>人数：<span id="players_line">-</span></div>
+        <div>游戏时间：<span id="time">-</span></div>
+      </div>
+
+      
+      <div class="section">
+        <h3>玩家数据</h3>
+        <table class="players-table">
+          <thead>
+            <tr>
+              <th>玩家</th>
+              <th>正确投票</th>
+              <th>击杀</th>
+              <th>生存轮次</th>
+            </tr>
+          </thead>
+          <tbody id="players_tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="section rounds">
+        <h3>关键事件和会议投票情况</h3>
+        <div id="rounds_container"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function esc(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') }
+    function params(){ const u = new URL(window.location.href); return { session: u.searchParams.get('session'), index: parseInt(u.searchParams.get('index')||'-1',10) } }
+    function fmtDuration(sec){
+      if(!sec && sec !== 0) return '-'
+      const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = sec%60
+      if(h>0) return `${h}小时${m}分${s}秒`
+      if(m>0) return `${m}分${s}秒`
+      return `${s}秒`
+    }
+
+    async function load(){
+      const { session, index } = params()
+      if(!session || index<0){ window.location.href = '../'; return }
+      document.getElementById('backLink').href = 'records.html?session=' + encodeURIComponent(session)
+      // 基础信息来自列表接口（用于顶部角色/胜负标签）
+      const r = await fetch('../api/records?session_id=' + encodeURIComponent(session))
+      if(!r.ok){ alert('加载失败: ' + r.status); return }
+      const data = await r.json()
+      if(!data.rows || !Array.isArray(data.rows) || index >= data.rows.length){ alert('记录不存在'); return }
+      const headers = data.headers || ['玩家角色','日期','玩家人数','存活回合','胜负']
+      const row = data.rows[index]
+      const [role, date, players, rounds, result] = row
+
+      // 顶部摘要
+      document.getElementById('role').textContent = role || '-'
+      const tag = document.getElementById('resultTag')
+      if((result||'').includes('胜') || (result||'').includes('获胜')){ tag.textContent = '胜利'; tag.className = 'tag win' }
+      else if((result||'').includes('败')){ tag.textContent = '失败'; tag.className = 'tag loss' }
+      else { tag.textContent = result || '-'; tag.className = 'tag' }
+      // 详情信息来自 /api/record_detail（meta + players）
+      const d = await fetch('../api/record_detail?session_id=' + encodeURIComponent(session) + '&index=' + encodeURIComponent(index))
+      if(d.ok){
+        const detail = await d.json()
+        const meta = detail.meta || {}
+        const plist = Array.isArray(detail.players) ? detail.players : []
+        document.getElementById('mode').textContent = meta.mode ?? '-'
+        document.getElementById('map').textContent = meta.map ?? '-'
+        document.getElementById('players_line').textContent = meta.playerCount ?? players ?? '-'
+        document.getElementById('time').textContent = meta.durationSeconds != null ? fmtDuration(meta.durationSeconds) : (date || '-')
+        // 渲染玩家表格
+        const tableData = plist.map(p => ({
+          id: p.userId,
+          name: p.nickname || '-',
+          role: p.roleName || '-',
+          logo: p.roleLogo || '',
+          correctVotes: p.correctVotes ?? '-',
+          kills: p.kills ?? '-',
+          rounds: p.turnsSurvived ?? '-'
+        }))
+        renderPlayersTable(tableData)
+        // 渲染轮次事件与会议
+        renderRounds(Array.isArray(detail.rounds) ? detail.rounds : [], plist)
+      } else {
+        // 回退：使用列表信息简单占位
+        renderPlayersTable([])
+      }
+
+    }
+
+    function renderPlayersTable(players){
+      const tbody = document.getElementById('players_tbody')
+      tbody.innerHTML = players.map(p => {
+        const initial = (p.name || '?').charAt(0)
+        const avatar = p.logo ? `<div class="avatar"><img src="${p.logo}" alt="${p.role}" /></div>` : `<div class="avatar">${initial}</div>`
+        const playerCell = `<div class="player-cell">${avatar}<div class="player-name">${p.name}-${p.role}</div></div>`
+        return `<tr>
+          <td>${playerCell}</td>
+          <td>${p.correctVotes ?? '-'}</td>
+          <td>${p.kills ?? '-'}</td>
+          <td>${p.rounds ?? '-'}</td>
+        </tr>`
+      }).join('')
+    }
+
+    function playerCellLeftHtml(name, role, logo){
+      const n = name || '-'
+      const r = role || '-'
+      const initial = n.charAt(0)
+      const avatar = logo ? `<div class="avatar" title="${n}"><img src="${logo}" alt="${r}" /></div>` : `<div class="avatar" title="${n}">${initial}</div>`
+      return `<div class="player-cell-left"><span class="name-role">${n}-${r}</span>${avatar}</div>`
+    }
+    function playerCellRightHtml(name, role, logo){
+      const n = name || '-'
+      const r = role || '-'
+      const initial = n.charAt(0)
+      const avatar = logo ? `<div class="avatar" title="${n}"><img src="${logo}" alt="${r}" /></div>` : `<div class="avatar" title="${n}">${initial}</div>`
+      return `<div class="player-cell-right">${avatar}<span class="name-role">${n}-${r}</span></div>`
+    }
+
+    function renderRounds(rounds, players){
+      const container = document.getElementById('rounds_container')
+      const parts = (rounds || []).map(r => {
+        const showTimeline = !!r.hasTimeline
+        const showMeeting = !!r.hasMeeting
+
+        let timelineTable = ''
+        if(showTimeline){
+          const eventsRows = (r.events || []).filter(ev => ev.type !== 3 && ev.type !== 1 && ev.type !== 0).map(ev => {
+            const uinfo = (players||[]).find(x => x.userId === ev.uid) || {}
+            const tinfo = (players||[]).find(x => x.userId === ev.targetId) || {}
+            const left = playerCellLeftHtml(ev.uNickname, ev.uRoleName, uinfo.roleLogo)
+            const label = ev.typeLabel && ev.typeLabel.length > 0 ? ev.typeLabel : (ev.type != null ? String(ev.type) : '-')
+            const right = playerCellRightHtml(ev.tNickname, ev.tRoleName, tinfo.roleLogo)
+            return `<tr>
+              <td>${left}</td>
+              <td class="center">${label}</td>
+              <td>${right}</td>
+            </tr>`
+          }).join('') || `<tr><td class="center" colspan="3">无事件</td></tr>`
+
+          timelineTable = `
+            <div class="round-title">轮次${r.index}</div>
+            <table class="subtable">
+              <colgroup>
+                <col style="width:40%" />
+                <col style="width:20%" />
+                <col style="width:40%" />
+              </colgroup>
+              <thead>
+                <tr><th></th><th class="center"></th><th></th></tr>
+              </thead>
+              <tbody>${eventsRows}</tbody>
+            </table>
+          `
+        }
+
+        let meetingTable = ''
+        if(showMeeting){
+          const votes = (r.meetingInfo && r.meetingInfo.votes) || {}
+          const starterId = (r.meetingInfo && r.meetingInfo.starter) || null
+          const byId = Object.create(null)
+          ;(players||[]).forEach(p => { byId[p.userId] = p })
+          const count = (players||[]).length || 0
+          const colWidth = 42
+          const topRow = (players||[]).map(p => {
+            const voted = Object.prototype.hasOwnProperty.call(votes, p.userId)
+            const initial = (p.roleName || '-').charAt(0)
+            const isStarter = starterId && p.userId === starterId
+            const cls = (voted ? 'avatar' : 'avatar muted') + (isStarter ? ' speaker' : '')
+            const inner = p.roleLogo ? `<img src="${p.roleLogo}" alt="${p.roleName}" />` : initial
+            return `<div class="${cls}" title="${p.nickname}">${inner}</div>`
+          }).join('')
+          const bottomRow = (players||[]).map(p => {
+            if(!Object.prototype.hasOwnProperty.call(votes, p.userId)){
+              return `<div class="avatar placeholder"></div>`
+            }
+            const target = votes[p.userId]
+            if(target === 'skip'){
+              return `<div class="avatar" title="跳过">?</div>`
+            }
+            const tp = byId[target]
+            if(tp){
+              const initial = (tp.roleName || '-').charAt(0)
+              const inner = tp.roleLogo ? `<img src="${tp.roleLogo}" alt="${tp.roleName}" />` : initial
+              return `<div class="avatar" title="${tp.nickname}">${inner}</div>`
+            }
+            return `<div class="avatar" title="未知">?</div>`
+          }).join('')
+          // 结果文本
+          const meetingOutcome = (() => {
+            const result = r.meetingInfo && r.meetingInfo.result
+            function renderEliminated(userId){
+              const p = byId[userId]
+              if(!p) return '无人被投票出局'
+              const initial = (p.roleName || '-').charAt(0)
+              const inner = p.roleLogo ? `<img src="${p.roleLogo}" alt="${p.roleName}" />` : initial
+              return `<div class="meeting-result"><div class="avatar inline" title="${p.nickname}">${inner}</div><span class="label">${esc(p.roleName)} 被投票出局</span></div>`
+            }
+            if(result && result !== 'voteDead'){
+              return renderEliminated(result)
+            }
+            if(result === 'voteDead'){
+              const counts = Object.create(null)
+              Object.entries(votes).forEach(([uid, target]) => {
+                if(target && target !== 'skip' && byId[target]){
+                  counts[target] = (counts[target] || 0) + 1
+                }
+              })
+              let max = 0, winner = null, tie = false
+              Object.entries(counts).forEach(([tid, c]) => {
+                if(c > max){ max = c; winner = tid; tie = false }
+                else if(c === max){ if(max>0) tie = true }
+              })
+              if(max>0 && winner && !tie) return renderEliminated(winner)
+            }
+            return `<div class="meeting-result">无人被投票出局</div>`
+          })()
+
+          meetingTable = `
+            <div class="round-title">会议${r.index}</div>
+            <table class="subtable">
+              <thead>
+                <tr><th class="center"></th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="center">
+                    <div class="meeting-rows">
+                      <div class="meeting-grid" style="grid-template-columns: repeat(${count}, ${colWidth}px)">${topRow}</div>
+                      <div class="meeting-grid" style="grid-template-columns: repeat(${count}, ${colWidth}px)">${bottomRow}</div>
+                      ${meetingOutcome}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          `
+        }
+
+        if(!showTimeline && !showMeeting){
+          return ''
+        }
+        return `<div class="round-box">${timelineTable}${meetingTable}</div>`
+      }).join('')
+
+      const endgame = renderEndgame(players)
+      container.innerHTML = parts + endgame
+    }
+
+    function renderEndgame(players){
+      const count = (players||[]).length || 0
+      if(count === 0) return ''
+      const colWidth = 42
+      const grid = (players||[]).map(p => {
+        const initial = (p.roleName || '-').charAt(0)
+        const inner = p.roleLogo ? `<img src="${p.roleLogo}" alt="${p.roleName}" />` : initial
+        const cls = p.win ? 'avatar trophy' : 'avatar muted'
+        return `<div class="${cls}" title="${p.nickname}">${inner}</div>`
+      }).join('')
+      return `
+        <div class="round-box">
+          <div class="round-title">游戏结束</div>
+          <table class="subtable">
+            <thead>
+              <tr><th class="center">结算</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="center">
+                  <div class="meeting-rows">
+                    <div class="meeting-grid" style="grid-template-columns: repeat(${count}, ${colWidth}px)">${grid}</div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `
+    }
+
+    document.addEventListener('DOMContentLoaded', load)
+  </script>
+</body>
+</html>

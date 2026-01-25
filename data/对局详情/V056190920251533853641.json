@@ -1,0 +1,545 @@
+{
+  "match_id": "V056190920251533853641",
+  "data": {
+    "matchId": "V056190920251533853641",
+    "startAt": 1758296019528,
+    "endAt": 1758296755410,
+    "map": 7,
+    "mode": 5,
+    "winningFaction": 1,
+    "playerData": {
+      "KBckO0FPtDSOhQe99I2eDeMicT92": {
+        "userId": "KBckO0FPtDSOhQe99I2eDeMicT92",
+        "nickname": "汉堡",
+        "role": 56,
+        "faction": 1,
+        "teamId": -1,
+        "win": true,
+        "isGhost": false,
+        "disconnected": false,
+        "deadAt": 0,
+        "kills": 0,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 1,
+        "correctVotes": 2,
+        "turnsSurvived": 2
+      },
+      "YADggFJXp5XA8cxMGIB9NMVZ3By1": {
+        "userId": "YADggFJXp5XA8cxMGIB9NMVZ3By1",
+        "nickname": "观察自由",
+        "role": 48,
+        "faction": 2,
+        "teamId": -1,
+        "win": false,
+        "isGhost": true,
+        "disconnected": false,
+        "deadAt": 1758296751977,
+        "kills": 1,
+        "tasks": 1,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 0,
+        "turnsSurvived": 1
+      },
+      "PDm2zCcDSZZ2Ym0pTV9DULQeKgm2": {
+        "userId": "PDm2zCcDSZZ2Ym0pTV9DULQeKgm2",
+        "nickname": "西瓜啵啵",
+        "role": 61,
+        "faction": 1,
+        "teamId": -1,
+        "win": true,
+        "isGhost": false,
+        "disconnected": false,
+        "deadAt": 0,
+        "kills": 0,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 2,
+        "turnsSurvived": 2
+      },
+      "4Suokyjhp1VSgQajJwlCveqeZKp1": {
+        "userId": "4Suokyjhp1VSgQajJwlCveqeZKp1",
+        "nickname": "苟在一群坏鸭身边当陈呆萌的严父",
+        "role": 9,
+        "faction": 2,
+        "teamId": -1,
+        "win": false,
+        "isGhost": true,
+        "disconnected": false,
+        "deadAt": 1758296509462,
+        "kills": 3,
+        "tasks": 1,
+        "sabotages": 1,
+        "discussions": 0,
+        "correctVotes": 0,
+        "turnsSurvived": 2
+      },
+      "nrOTnuVhjrZU7jCczqjGCPA83nm2": {
+        "userId": "nrOTnuVhjrZU7jCczqjGCPA83nm2",
+        "nickname": "姐姐",
+        "role": 31,
+        "faction": 1,
+        "teamId": -1,
+        "win": true,
+        "isGhost": true,
+        "disconnected": false,
+        "deadAt": 1758296075852,
+        "kills": 0,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 0,
+        "turnsSurvived": 2
+      },
+      "etcuivikBFV2epFXWtg0RNpzEDm1": {
+        "userId": "etcuivikBFV2epFXWtg0RNpzEDm1",
+        "nickname": "洛",
+        "role": 50,
+        "faction": 1,
+        "teamId": -1,
+        "win": false,
+        "isGhost": true,
+        "disconnected": true,
+        "deadAt": 1758296074220,
+        "kills": 0,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 0,
+        "turnsSurvived": 0
+      },
+      "8leGa83iKCXEIoLQsUHBxH9T9rl1": {
+        "userId": "8leGa83iKCXEIoLQsUHBxH9T9rl1",
+        "nickname": "多多",
+        "role": 102,
+        "faction": 1,
+        "teamId": -1,
+        "win": true,
+        "isGhost": false,
+        "disconnected": false,
+        "deadAt": 0,
+        "kills": 0,
+        "tasks": 1,
+        "sabotages": 0,
+        "discussions": 1,
+        "correctVotes": 2,
+        "turnsSurvived": 2
+      },
+      "JGKKr1oxxKQtn5PqgtVrOcHwcFx2": {
+        "userId": "JGKKr1oxxKQtn5PqgtVrOcHwcFx2",
+        "nickname": "总被男人欺骗",
+        "role": 11,
+        "faction": 1,
+        "teamId": -1,
+        "win": true,
+        "isGhost": true,
+        "disconnected": false,
+        "deadAt": 1758296051368,
+        "kills": 0,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 0,
+        "turnsSurvived": 2
+      },
+      "VFJSbz504UVt8Fe3bmrdq4R4J9m2": {
+        "userId": "VFJSbz504UVt8Fe3bmrdq4R4J9m2",
+        "nickname": "丁又丁不懂",
+        "role": 33,
+        "faction": 2,
+        "teamId": -1,
+        "win": false,
+        "isGhost": true,
+        "disconnected": false,
+        "deadAt": 1758296494415,
+        "kills": 2,
+        "tasks": 0,
+        "sabotages": 1,
+        "discussions": 0,
+        "correctVotes": 0,
+        "turnsSurvived": 1
+      },
+      "S4bJXCmHS3eOvaxPNOSLl4ebOgv1": {
+        "userId": "S4bJXCmHS3eOvaxPNOSLl4ebOgv1",
+        "nickname": "兰州流泪面",
+        "role": 21,
+        "faction": 3,
+        "teamId": -1,
+        "win": false,
+        "isGhost": false,
+        "disconnected": false,
+        "deadAt": 0,
+        "kills": 0,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 0,
+        "turnsSurvived": 2
+      },
+      "NKssxxxFsOXXhGoxUjaD0xHn0cu2": {
+        "userId": "NKssxxxFsOXXhGoxUjaD0xHn0cu2",
+        "nickname": "铁柱",
+        "role": 20,
+        "faction": 1,
+        "teamId": -1,
+        "win": true,
+        "isGhost": false,
+        "disconnected": false,
+        "deadAt": 0,
+        "kills": 0,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 2,
+        "turnsSurvived": 2
+      },
+      "MsKiIuLu11VxxVGNduIQAQxJcTl1": {
+        "userId": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+        "nickname": "斜又斜不会",
+        "role": 96,
+        "faction": 3,
+        "teamId": -1,
+        "win": false,
+        "isGhost": true,
+        "disconnected": false,
+        "deadAt": 1758296111686,
+        "kills": 0,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 0,
+        "turnsSurvived": 2
+      },
+      "kbSVyXt543bLjGkTiT1M8XGO0vf1": {
+        "userId": "kbSVyXt543bLjGkTiT1M8XGO0vf1",
+        "nickname": "世界第一好鹅陈呆萌爸爸",
+        "role": 3,
+        "faction": 3,
+        "teamId": -1,
+        "win": false,
+        "isGhost": false,
+        "disconnected": false,
+        "deadAt": 0,
+        "kills": 0,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 0,
+        "turnsSurvived": 2
+      },
+      "Wv1Rx6bbTCfwFiW9nKRfS68ZAQ83": {
+        "userId": "Wv1Rx6bbTCfwFiW9nKRfS68ZAQ83",
+        "nickname": "六君子",
+        "role": 87,
+        "faction": 1,
+        "teamId": -1,
+        "win": true,
+        "isGhost": false,
+        "disconnected": false,
+        "deadAt": 0,
+        "kills": 0,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 2,
+        "turnsSurvived": 2
+      },
+      "ALsqZzRbG3bq3ebvJufaObgnKUu1": {
+        "userId": "ALsqZzRbG3bq3ebvJufaObgnKUu1",
+        "nickname": "刁青天",
+        "role": 4,
+        "faction": 1,
+        "teamId": -1,
+        "win": false,
+        "isGhost": true,
+        "disconnected": true,
+        "deadAt": 1758296111073,
+        "kills": 0,
+        "tasks": 0,
+        "sabotages": 0,
+        "discussions": 0,
+        "correctVotes": 0,
+        "turnsSurvived": 0
+      }
+    },
+    "rounds": [
+      {
+        "startAt": 1758296019528,
+        "endAt": 1758296497454,
+        "meetingInfo": {
+          "starter": "KBckO0FPtDSOhQe99I2eDeMicT92",
+          "type": "Report",
+          "startTime": 1758296131397,
+          "votes": {
+            "KBckO0FPtDSOhQe99I2eDeMicT92": "VFJSbz504UVt8Fe3bmrdq4R4J9m2",
+            "YADggFJXp5XA8cxMGIB9NMVZ3By1": "skip",
+            "PDm2zCcDSZZ2Ym0pTV9DULQeKgm2": "VFJSbz504UVt8Fe3bmrdq4R4J9m2",
+            "4Suokyjhp1VSgQajJwlCveqeZKp1": "skip",
+            "8leGa83iKCXEIoLQsUHBxH9T9rl1": "VFJSbz504UVt8Fe3bmrdq4R4J9m2",
+            "VFJSbz504UVt8Fe3bmrdq4R4J9m2": "skip",
+            "S4bJXCmHS3eOvaxPNOSLl4ebOgv1": "skip",
+            "NKssxxxFsOXXhGoxUjaD0xHn0cu2": "VFJSbz504UVt8Fe3bmrdq4R4J9m2",
+            "kbSVyXt543bLjGkTiT1M8XGO0vf1": "VFJSbz504UVt8Fe3bmrdq4R4J9m2",
+            "Wv1Rx6bbTCfwFiW9nKRfS68ZAQ83": "VFJSbz504UVt8Fe3bmrdq4R4J9m2"
+          },
+          "result": "VFJSbz504UVt8Fe3bmrdq4R4J9m2"
+        },
+        "timeline": [
+          {
+            "timestamp": 1758296051368,
+            "type": 2,
+            "uid": "4Suokyjhp1VSgQajJwlCveqeZKp1",
+            "targetId": "JGKKr1oxxKQtn5PqgtVrOcHwcFx2"
+          },
+          {
+            "timestamp": 1758296052200,
+            "type": 1013,
+            "uid": "VFJSbz504UVt8Fe3bmrdq4R4J9m2",
+            "targetId": "MsKiIuLu11VxxVGNduIQAQxJcTl1"
+          },
+          {
+            "timestamp": 1758296054789,
+            "type": 6,
+            "uid": "4Suokyjhp1VSgQajJwlCveqeZKp1",
+            "targetId": "JGKKr1oxxKQtn5PqgtVrOcHwcFx2"
+          },
+          {
+            "timestamp": 1758296059214,
+            "type": 1014,
+            "uid": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758296063809,
+            "type": 1014,
+            "uid": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+            "targetId": "etcuivikBFV2epFXWtg0RNpzEDm1"
+          },
+          {
+            "timestamp": 1758296068541,
+            "type": 1014,
+            "uid": "etcuivikBFV2epFXWtg0RNpzEDm1",
+            "targetId": "ALsqZzRbG3bq3ebvJufaObgnKUu1"
+          },
+          {
+            "timestamp": 1758296073214,
+            "type": 1014,
+            "uid": "ALsqZzRbG3bq3ebvJufaObgnKUu1",
+            "targetId": "etcuivikBFV2epFXWtg0RNpzEDm1"
+          },
+          {
+            "timestamp": 1758296074220,
+            "type": 1015,
+            "uid": "VFJSbz504UVt8Fe3bmrdq4R4J9m2",
+            "targetId": "etcuivikBFV2epFXWtg0RNpzEDm1"
+          },
+          {
+            "timestamp": 1758296075852,
+            "type": 1002,
+            "uid": "nrOTnuVhjrZU7jCczqjGCPA83nm2",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758296075852,
+            "type": 2,
+            "uid": "4Suokyjhp1VSgQajJwlCveqeZKp1",
+            "targetId": "nrOTnuVhjrZU7jCczqjGCPA83nm2"
+          },
+          {
+            "timestamp": 1758296111011,
+            "type": 1013,
+            "uid": "VFJSbz504UVt8Fe3bmrdq4R4J9m2",
+            "targetId": "4Suokyjhp1VSgQajJwlCveqeZKp1"
+          },
+          {
+            "timestamp": 1758296111042,
+            "type": 1004,
+            "uid": "ALsqZzRbG3bq3ebvJufaObgnKUu1",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758296111073,
+            "type": 2,
+            "uid": "4Suokyjhp1VSgQajJwlCveqeZKp1",
+            "targetId": "ALsqZzRbG3bq3ebvJufaObgnKUu1"
+          },
+          {
+            "timestamp": 1758296111686,
+            "type": 2,
+            "uid": "YADggFJXp5XA8cxMGIB9NMVZ3By1",
+            "targetId": "MsKiIuLu11VxxVGNduIQAQxJcTl1"
+          },
+          {
+            "timestamp": 1758296111686,
+            "type": 1016,
+            "uid": "YADggFJXp5XA8cxMGIB9NMVZ3By1",
+            "targetId": "MsKiIuLu11VxxVGNduIQAQxJcTl1"
+          },
+          {
+            "timestamp": 1758296111686,
+            "type": 5,
+            "uid": "YADggFJXp5XA8cxMGIB9NMVZ3By1",
+            "targetId": "MsKiIuLu11VxxVGNduIQAQxJcTl1"
+          },
+          {
+            "timestamp": 1758296120025,
+            "type": 1014,
+            "uid": "4Suokyjhp1VSgQajJwlCveqeZKp1",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758296124591,
+            "type": 1014,
+            "uid": "4Suokyjhp1VSgQajJwlCveqeZKp1",
+            "targetId": "NKssxxxFsOXXhGoxUjaD0xHn0cu2"
+          },
+          {
+            "timestamp": 1758296484407,
+            "type": 3,
+            "uid": "VFJSbz504UVt8Fe3bmrdq4R4J9m2",
+            "targetId": ""
+          }
+        ]
+      },
+      {
+        "startAt": 1758296497454,
+        "endAt": 1758296755410,
+        "meetingInfo": {
+          "starter": "8leGa83iKCXEIoLQsUHBxH9T9rl1",
+          "type": "Emergency",
+          "startTime": 1758296520465,
+          "votes": {
+            "KBckO0FPtDSOhQe99I2eDeMicT92": "YADggFJXp5XA8cxMGIB9NMVZ3By1",
+            "YADggFJXp5XA8cxMGIB9NMVZ3By1": "skip",
+            "PDm2zCcDSZZ2Ym0pTV9DULQeKgm2": "YADggFJXp5XA8cxMGIB9NMVZ3By1",
+            "8leGa83iKCXEIoLQsUHBxH9T9rl1": "YADggFJXp5XA8cxMGIB9NMVZ3By1",
+            "S4bJXCmHS3eOvaxPNOSLl4ebOgv1": "YADggFJXp5XA8cxMGIB9NMVZ3By1",
+            "NKssxxxFsOXXhGoxUjaD0xHn0cu2": "YADggFJXp5XA8cxMGIB9NMVZ3By1",
+            "kbSVyXt543bLjGkTiT1M8XGO0vf1": "YADggFJXp5XA8cxMGIB9NMVZ3By1",
+            "Wv1Rx6bbTCfwFiW9nKRfS68ZAQ83": "YADggFJXp5XA8cxMGIB9NMVZ3By1"
+          },
+          "result": "YADggFJXp5XA8cxMGIB9NMVZ3By1"
+        },
+        "timeline": [
+          {
+            "timestamp": 1758296497454,
+            "type": 1014,
+            "uid": "NKssxxxFsOXXhGoxUjaD0xHn0cu2",
+            "targetId": "NKssxxxFsOXXhGoxUjaD0xHn0cu2"
+          },
+          {
+            "timestamp": 1758296502070,
+            "type": 1014,
+            "uid": "NKssxxxFsOXXhGoxUjaD0xHn0cu2",
+            "targetId": "S4bJXCmHS3eOvaxPNOSLl4ebOgv1"
+          },
+          {
+            "timestamp": 1758296506729,
+            "type": 1014,
+            "uid": "S4bJXCmHS3eOvaxPNOSLl4ebOgv1",
+            "targetId": "4Suokyjhp1VSgQajJwlCveqeZKp1"
+          },
+          {
+            "timestamp": 1758296509462,
+            "type": 1015,
+            "uid": "VFJSbz504UVt8Fe3bmrdq4R4J9m2",
+            "targetId": "4Suokyjhp1VSgQajJwlCveqeZKp1"
+          },
+          {
+            "timestamp": 1758296741976,
+            "type": 3,
+            "uid": "YADggFJXp5XA8cxMGIB9NMVZ3By1",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758296755410,
+            "type": 0,
+            "uid": "KBckO0FPtDSOhQe99I2eDeMicT92",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758296755410,
+            "type": 1,
+            "uid": "YADggFJXp5XA8cxMGIB9NMVZ3By1",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758296755410,
+            "type": 0,
+            "uid": "PDm2zCcDSZZ2Ym0pTV9DULQeKgm2",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758296755410,
+            "type": 1,
+            "uid": "4Suokyjhp1VSgQajJwlCveqeZKp1",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758296755410,
+            "type": 0,
+            "uid": "nrOTnuVhjrZU7jCczqjGCPA83nm2",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758296755410,
+            "type": 0,
+            "uid": "8leGa83iKCXEIoLQsUHBxH9T9rl1",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758296755410,
+            "type": 1,
+            "uid": "eWCuLb9NbfNVbgw1t7mz1EWkzmf2",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758296755410,
+            "type": 0,
+            "uid": "JGKKr1oxxKQtn5PqgtVrOcHwcFx2",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758296755410,
+            "type": 1,
+            "uid": "VFJSbz504UVt8Fe3bmrdq4R4J9m2",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758296755410,
+            "type": 1,
+            "uid": "S4bJXCmHS3eOvaxPNOSLl4ebOgv1",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758296755410,
+            "type": 0,
+            "uid": "NKssxxxFsOXXhGoxUjaD0xHn0cu2",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758296755410,
+            "type": 1,
+            "uid": "MsKiIuLu11VxxVGNduIQAQxJcTl1",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758296755410,
+            "type": 1,
+            "uid": "kbSVyXt543bLjGkTiT1M8XGO0vf1",
+            "targetId": ""
+          },
+          {
+            "timestamp": 1758296755410,
+            "type": 0,
+            "uid": "Wv1Rx6bbTCfwFiW9nKRfS68ZAQ83",
+            "targetId": ""
+          }
+        ]
+      }
+    ],
+    "gameModeData": null
+  }
+}
