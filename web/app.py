@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi import HTTPException
 from fastapi import Body, Query
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse, StreamingResponse
 from pydantic import BaseModel
 from typing import Optional
 import os
@@ -16,6 +16,7 @@ import shutil
 import time
 import threading
 import uvicorn
+from queue import Queue, Empty
 
 # from web.scraper import GaggleScraper  # 注释：停用基于前端 DOM 的抓取
 from login import GaggleFunScraper
@@ -109,13 +110,43 @@ EN_CN_MAPPING = _load_en_cn_mapping()
 
 
 def _latest_searchmatches_file():
-    """返回 data/ 目录下最新的 SearchMatches_*.json 文件路径（Path 或 None）。"""
+ 
     data_dir = PROJECT_DIR / 'data'
+    records_dir = data_dir / '对局记录文件夹'
     try:
-        files = sorted(data_dir.glob('SearchMatches_*.json'), key=lambda p: p.stat().st_mtime, reverse=True)
-        return files[0] if files else None
+        files_records = []
+        try:
+            files_records = sorted(records_dir.glob('SearchMatches_*.json'), key=lambda p: p.stat().st_mtime, reverse=True)
+        except Exception:
+            files_records = []
+        if files_records:
+            return files_records[0]
+        files_root = sorted(data_dir.glob('SearchMatches_*.json'), key=lambda p: p.stat().st_mtime, reverse=True)
+        return files_root[0] if files_root else None
     except Exception:
         return None
+
+def _archive_latest_searchmatches():
+    """将 data 根目录下最新的 SearchMatches_*.json 复制到 data/对局记录文件夹/ 下（若存在则覆盖），便于归档管理。"""
+    data_dir = PROJECT_DIR / 'data'
+    target_dir = data_dir / '对局记录文件夹'
+    try:
+        target_dir.mkdir(parents=True, exist_ok=True)
+    except Exception:
+        pass
+    try:
+        files_root = sorted(data_dir.glob('SearchMatches_*.json'), key=lambda p: p.stat().st_mtime, reverse=True)
+        if not files_root:
+            return
+        src = files_root[0]
+        dst = target_dir / src.name
+        try:
+            shutil.copy2(src, dst)
+        except Exception:
+            # 复制失败时忽略，不影响主流程
+            pass
+    except Exception:
+        pass
 
 # 对局详情保存目录（旧路径，保留兼容）
 DETAIL_DIR = PROJECT_DIR / 'data' / '对局详情jsonl'
@@ -136,6 +167,9 @@ def _session_searchmatches_path(session_id: str) -> Path:
 
 def _session_detail_path(session_id: str, match_id: str) -> Path:
     return _session_dir(session_id) / 'details' / f"{match_id}.json"
+
+def _session_cookies_path(session_id: str) -> Path:
+    return _session_dir(session_id) / 'cookies.json'
 
 def _write_session_meta(session_id: str):
     meta_path = _session_dir(session_id) / '.meta.json'
@@ -180,17 +214,32 @@ def serve_login():
 def api_preload():
     # 创建会话并预加载登录页
     session_id = uuid.uuid4().hex[:12]
+    token_acquired = SCRAPER_SEM.acquire(blocking=False)
+    if not token_acquired:
+        raise HTTPException(status_code=429, detail="当前访问较多，请稍后重试", headers={"Retry-After": str(SCRAPER_RETRY_AFTER)})
     scraper = GaggleFunScraper(headless=True)
     try:
         # 停用：前端 DOM 预加载
         # scraper.preload_login_page()
         # 改为直接打开登录页，等待后续 /api/login 使用
         scraper.driver.get(scraper.LOGIN_URL)
-        SESSIONS[session_id] = {"scraper": scraper, "status": "ready", "data": None}
+        SESSIONS[session_id] = {
+            "scraper": scraper,
+            "status": "ready",
+            "data": None,
+            "lock": threading.Lock(),
+            "sse_queues": [],
+            "refresh_thread": None,
+            "refresh_stop": None,
+        }
         return {"session_id": session_id, "status": "ready"}
     except Exception as e:
         try:
             scraper.close()
+        except Exception:
+            pass
+        try:
+            SCRAPER_SEM.release()
         except Exception:
             pass
         raise HTTPException(status_code=500, detail=f"预加载失败: {e}")
@@ -198,41 +247,66 @@ def api_preload():
 
 @app.post("/api/login")
 def api_login(req: LoginReq = Body(...)):
-    token_acquired = SCRAPER_SEM.acquire(blocking=False)
-    if not token_acquired:
-        raise HTTPException(status_code=429, detail="当前访问较多，请稍后重试", headers={"Retry-After": str(SCRAPER_RETRY_AFTER)})
-    # 允许无会话直接登录：若无 session_id 或 session 不存在，则创建新会话与浏览器
+    # 允许无会话直接登录：若无 session_id 或会话不存在，则创建新会话与浏览器（占用并发令牌）
     session_id = req.session_id or uuid.uuid4().hex[:12]
     s = SESSIONS.get(session_id)
     created_new = False
     if not s:
+        # 创建新浏览器需要占用一个并发令牌
+        token_acquired = SCRAPER_SEM.acquire(blocking=False)
+        if not token_acquired:
+            raise HTTPException(status_code=429, detail="当前访问较多，请稍后重试", headers={"Retry-After": str(SCRAPER_RETRY_AFTER)})
         scraper = GaggleFunScraper(headless=True)
-        s = {"scraper": scraper, "status": "ready", "data": None}
+        s = {
+            "scraper": scraper,
+            "status": "ready",
+            "data": None,
+            "lock": threading.Lock(),
+            "sse_queues": [],
+            "refresh_thread": None,
+            "refresh_stop": None,
+        }
         SESSIONS[session_id] = s
         created_new = True
     elif not s.get("scraper"):
-        # 旧会话但浏览器已释放，按需重建
+        token_acquired = SCRAPER_SEM.acquire(blocking=False)
+        if not token_acquired:
+            raise HTTPException(status_code=429, detail="当前访问较多，请稍后重试", headers={"Retry-After": str(SCRAPER_RETRY_AFTER)})
         s["scraper"] = GaggleFunScraper(headless=True)
 
     scraper: GaggleFunScraper = s["scraper"]
+    cookies_path = _session_cookies_path(session_id)
     try:
-        ok = scraper.login(req.email, req.password)
+        # 优先尝试 Cookie 免登录
+        ok = False
+        try:
+            if cookies_path.exists():
+                ok = scraper.try_cookie_login(str(cookies_path))
+        except Exception:
+            ok = False
         if not ok:
-            s["status"] = "error"
-            # 根据爬虫内部错误标记返回更清晰的信息
+            ok = scraper.login(req.email, req.password)
+            if not ok:
+                s["status"] = "error"
+                try:
+                    err = getattr(scraper, 'last_error', None)
+                except Exception:
+                    err = None
+                if err == 'invalid_credentials':
+                    raise HTTPException(status_code=401, detail="用户名或密码错误")
+                raise HTTPException(status_code=401, detail="登录失败")
             try:
-                err = getattr(scraper, 'last_error', None)
+                scraper.save_cookies(str(cookies_path))
             except Exception:
-                err = None
-            if err == 'invalid_credentials':
-                raise HTTPException(status_code=401, detail="用户名或密码错误")
-            raise HTTPException(status_code=401, detail="登录失败")
+                pass
 
-        # 停用：基于前端 DOM 的抓取
-        # headers, rows = scraper.fetch()
-        # 改为：调用后端接口抓取，生成 data/SearchMatches_*.json
-        scraper.fetch_game_records()
-        # 将抓取的最新 SearchMatches_* 复制到会话目录
+        # 缓存认证信息以便后续重建/重登
+        s["auth"] = {"email": req.email, "password": req.password}
+
+        # 触发一次拉取，刷新 SearchMatches
+        with s.get("lock"):
+            scraper.fetch_game_records()
+        _archive_latest_searchmatches()
         latest = _latest_searchmatches_file()
         sess_dir = _session_dir(session_id)
         _write_session_meta(session_id)
@@ -255,11 +329,10 @@ def api_login(req: LoginReq = Body(...)):
                     payload = json.load(f)
                 latest_matches = (payload or {}).get('data', {}).get('body', {}).get('latestMatches', [])
                 match_ids = [m.get('matchId') for m in latest_matches if isinstance(m, dict) and m.get('matchId')]
-                # 缓存匹配到的全部 matchId 以及登录凭据（仅会话内存使用）
                 s["match_ids"] = match_ids
-                s["auth"] = {"email": req.email, "password": req.password}
                 for mid in match_ids[:5]:
-                    detail = scraper.fetch_match_detail(mid)
+                    with s.get("lock"):
+                        detail = scraper.fetch_match_detail(mid)
                     if detail is not None:
                         _save_match_detail_json(session_id, mid, detail)
                         match_details.append({"matchId": mid, "data": detail})
@@ -268,17 +341,27 @@ def api_login(req: LoginReq = Body(...)):
         if match_details:
             s["match_details"] = match_details
         s["status"] = "done"
+        # 启动后台刷新线程（若未启动）
+        if not s.get("refresh_thread"):
+            stop_evt = threading.Event()
+            s["refresh_stop"] = stop_evt
+            t = threading.Thread(target=_refresh_loop, args=(session_id, stop_evt), daemon=True)
+            s["refresh_thread"] = t
+            t.start()
         return {"ok": True, "session_id": session_id}
-    finally:
-        try:
-            scraper.close()
-        except Exception:
-            pass
-        s["scraper"] = None
-        try:
-            SCRAPER_SEM.release()
-        except Exception:
-            pass
+    except Exception:
+        # 出错时，如是新建会话则回收资源
+        if created_new:
+            try:
+                scraper.close()
+            except Exception:
+                pass
+            SESSIONS.pop(session_id, None)
+            try:
+                SCRAPER_SEM.release()
+            except Exception:
+                pass
+        raise
 
 
 @app.get("/api/records")
@@ -323,12 +406,12 @@ def api_records(session_id: str = Query(...)):
     extras = []  # 与 rows 同索引：{roleLogo, mode, map}
     wins = 0
     losses = 0
-    maps_values = []
+    maps_conf = {}
     modes_values = []
     try:
-        maps_values = list((EN_CN_MAPPING.get('MAPS') or {}).values())
+        maps_conf = EN_CN_MAPPING.get('MAPS') or {}
     except Exception:
-        maps_values = []
+        maps_conf = {}
     try:
         modes_values = list((EN_CN_MAPPING.get('GAME_MODES') or {}).values())
     except Exception:
@@ -360,8 +443,16 @@ def api_records(session_id: str = Query(...)):
             map_idx = item.get('map')
             map_cn = '-'
             try:
-                if isinstance(map_idx, int) and map_idx >= 1 and map_idx <= len(maps_values):
-                    map_cn = maps_values[map_idx - 1]
+                maps_obj = maps_conf
+                if isinstance(map_idx, int):
+                    if isinstance(maps_obj, dict) and any(str(k).isdigit() for k in maps_obj.keys()):
+                        inner = maps_obj.get(str(map_idx))
+                        if isinstance(inner, dict) and inner:
+                            map_cn = next(iter(inner.values()))
+                    else:
+                        vals = list((maps_obj or {}).values())
+                        if map_idx >= 1 and map_idx <= len(vals):
+                            map_cn = vals[map_idx - 1]
             except Exception:
                 pass
             mode_cn = '-'
@@ -381,7 +472,7 @@ def api_records(session_id: str = Query(...)):
 
     total = len(rows)
     win_rate = round(wins / (wins + losses) * 100, 1) if (wins + losses) > 0 else 0
-    result = {"headers": headers, "rows": rows, "summary": {"total": total, "wins": wins, "losses": losses, "win_rate": win_rate}, "extras": extras}
+    result = {"headers": headers, "rows": rows, "summary": {"total": total, "wins": wins, "losses": losses, "win_rate": win_rate}, "extras": extras, "version": int(time.time())}
     # 缓存标准结果，便于后续重复请求
     s["data"] = result
     return result
@@ -431,39 +522,25 @@ def api_record_detail(session_id: str = Query(...), index: int = Query(0)):
                     s["match_details"] = details
         except Exception:
             pass
-        # 若仍无详情，则进行按需网络抓取
+        # 若仍无详情，则使用会话内持久化浏览器按需抓取
         if index >= len(details) or not details[index]:
-            auth = s.get("auth") or {}
-            email = auth.get("email")
-            password = auth.get("password")
-            if not email or not password:
-                raise HTTPException(status_code=400, detail="会话未保存认证信息，无法按需抓取")
-            # 按需实例化 scraper 抓取该条详情
-            token_acquired = SCRAPER_SEM.acquire(blocking=False)
-            if not token_acquired:
-                raise HTTPException(status_code=429, detail="当前访问较多，请稍后重试", headers={"Retry-After": str(SCRAPER_RETRY_AFTER)})
-            scraper = GaggleFunScraper(headless=True)
-            try:
-                if not scraper.login(email, password):
-                    raise HTTPException(status_code=401, detail="登录失败")
+            scraper = s.get("scraper")
+            if not scraper:
+                raise HTTPException(status_code=503, detail="浏览器未就绪，请稍后重试或重新登录")
+            lock = s.get("lock")
+            if lock:
+                with lock:
+                    detail = scraper.fetch_match_detail(mid)
+            else:
                 detail = scraper.fetch_match_detail(mid)
-                if detail is None:
-                    raise HTTPException(status_code=500, detail="抓取对局详情失败")
-                _save_match_detail_json(session_id, mid, detail)
-                # 将结果放入会话缓存，保持索引对齐
-                if index >= len(details):
-                    details.extend([None] * (index - len(details) + 1))
-                details[index] = {"matchId": mid, "data": detail}
-                s["match_details"] = details
-            finally:
-                try:
-                    scraper.close()
-                except Exception:
-                    pass
-                try:
-                    SCRAPER_SEM.release()
-                except Exception:
-                    pass
+            if detail is None:
+                raise HTTPException(status_code=500, detail="抓取对局详情失败")
+            _save_match_detail_json(session_id, mid, detail)
+            # 将结果放入会话缓存，保持索引对齐
+            if index >= len(details):
+                details.extend([None] * (index - len(details) + 1))
+            details[index] = {"matchId": mid, "data": detail}
+            s["match_details"] = details
     raw = details[index] or {}
     match = raw.get('data') or {}
 
@@ -584,6 +661,180 @@ def fetch(req: FetchReq = Body(...)):
             pass
 
 
+# ---- 实时刷新与 SSE 推送 ----
+REFRESH_INTERVAL_SECONDS = int(os.getenv("REFRESH_INTERVAL_SECONDS", "600"))
+
+def _broadcast_sse(session_id: str, event: str, data: dict):
+    s = SESSIONS.get(session_id)
+    if not s:
+        return
+    queues = list(s.get("sse_queues", []))
+    payload = json.dumps(data, ensure_ascii=False)
+    for q in queues:
+        try:
+            q.put_nowait({"event": event, "data": payload})
+        except Exception:
+            pass
+
+def _ensure_session_scraper(session_id: str):
+    s = SESSIONS.get(session_id)
+    if not s:
+        return
+    if s.get("scraper"):
+        return
+    token_acquired = SCRAPER_SEM.acquire(blocking=False)
+    if not token_acquired:
+        raise HTTPException(status_code=429, detail="当前访问较多，请稍后重试", headers={"Retry-After": str(SCRAPER_RETRY_AFTER)})
+    scraper = GaggleFunScraper(headless=True)
+    s["scraper"] = scraper
+    # 使用 cookies 免登录或回退到账号登录
+    ok = False
+    cookies_path = _session_cookies_path(session_id)
+    try:
+        if cookies_path.exists():
+            ok = scraper.try_cookie_login(str(cookies_path))
+    except Exception:
+        ok = False
+    if not ok:
+        auth = s.get("auth") or {}
+        email = auth.get("email")
+        password = auth.get("password")
+        if not email or not password:
+            # 回收已占用的并发
+            try:
+                SCRAPER_SEM.release()
+            except Exception:
+                pass
+            s["scraper"] = None
+            raise HTTPException(status_code=400, detail="会话未保存认证信息")
+        ok = scraper.login(email, password)
+        if not ok:
+            try:
+                SCRAPER_SEM.release()
+            except Exception:
+                pass
+            s["scraper"] = None
+            raise HTTPException(status_code=401, detail="登录失败")
+        try:
+            scraper.save_cookies(str(cookies_path))
+        except Exception:
+            pass
+
+def _refresh_loop(session_id: str, stop_evt: threading.Event):
+    while not stop_evt.is_set():
+        try:
+            s = SESSIONS.get(session_id)
+            if not s:
+                return
+            _ensure_session_scraper(session_id)
+            scraper: GaggleFunScraper = s.get("scraper")
+            if not scraper:
+                return
+            # 抓取最新 SearchMatches
+            lock = s.get("lock")
+            if lock:
+                with lock:
+                    scraper.fetch_game_records()
+            else:
+                scraper.fetch_game_records()
+            _archive_latest_searchmatches()
+            latest = _latest_searchmatches_file()
+            search_dst = _session_searchmatches_path(session_id)
+            if latest and latest.exists():
+                try:
+                    shutil.copy2(latest, search_dst)
+                except Exception:
+                    search_dst = latest
+            # 比对 matchIds，抓取新增详情
+            try:
+                if (search_dst and Path(search_dst).exists()):
+                    with open(search_dst, 'r', encoding='utf-8') as f:
+                        payload = json.load(f)
+                    latest_matches = (payload or {}).get('data', {}).get('body', {}).get('latestMatches', [])
+                    new_ids = [m.get('matchId') for m in latest_matches if isinstance(m, dict) and m.get('matchId')]
+                else:
+                    new_ids = []
+            except Exception:
+                new_ids = []
+            old_ids = s.get("match_ids") or []
+            added = [mid for mid in new_ids if mid not in set(old_ids)]
+            s["match_ids"] = new_ids
+            any_detail = False
+            for mid in added:
+                try:
+                    if lock:
+                        with lock:
+                            detail = scraper.fetch_match_detail(mid)
+                    else:
+                        detail = scraper.fetch_match_detail(mid)
+                    if detail is not None:
+                        _save_match_detail_json(session_id, mid, detail)
+                        any_detail = True
+                except Exception:
+                    pass
+            # 通知前端 records/detail 更新
+            _broadcast_sse(session_id, "records", {"version": int(time.time())})
+            if any_detail:
+                _broadcast_sse(session_id, "detail", {"type": "added"})
+        except Exception:
+            pass
+        stop_evt.wait(REFRESH_INTERVAL_SECONDS)
+
+@app.post("/api/refresh_now")
+def refresh_now(session_id: str = Query(...)):
+    s = SESSIONS.get(session_id)
+    if not s:
+        raise HTTPException(status_code=404, detail="会话不存在")
+    try:
+        _ensure_session_scraper(session_id)
+        scraper: GaggleFunScraper = s.get("scraper")
+        lock = s.get("lock")
+        if lock:
+            with lock:
+                scraper.fetch_game_records()
+        else:
+            scraper.fetch_game_records()
+        _archive_latest_searchmatches()
+        latest = _latest_searchmatches_file()
+        if latest and latest.exists():
+            try:
+                shutil.copy2(latest, _session_searchmatches_path(session_id))
+            except Exception:
+                pass
+        _broadcast_sse(session_id, "records", {"version": int(time.time())})
+        return {"accepted": True}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/sse")
+def sse(session_id: str = Query(...)):
+    s = SESSIONS.get(session_id)
+    if not s:
+        raise HTTPException(status_code=404, detail="会话不存在")
+    q: Queue = Queue(maxsize=200)
+    s.setdefault("sse_queues", []).append(q)
+    def gen():
+        try:
+            while True:
+                try:
+                    item = q.get(timeout=20)
+                except Empty:
+                    yield ":keepalive\n\n"
+                    continue
+                ev = item.get("event")
+                data = item.get("data")
+                yield f"event: {ev}\n"
+                yield f"data: {data}\n\n"
+        finally:
+            try:
+                s.get("sse_queues", []).remove(q)
+            except Exception:
+                pass
+    return StreamingResponse(gen(), media_type="text/event-stream")
+
+
 if __name__ == "__main__":
     uvicorn.run("web.app:app", host="127.0.0.1", port=8000, reload=True)
 
@@ -619,6 +870,35 @@ def _janitor_loop(stop_evt: threading.Event):
             for d in SESS_ROOT.iterdir():
                 if d.is_dir() and _session_age_hours(d) > DATA_TTL_HOURS:
                     shutil.rmtree(d, ignore_errors=True)
+        except Exception:
+            pass
+        # 清理内存会话与浏览器
+        try:
+            remove_keys = []
+            for sid, s in list(SESSIONS.items()):
+                try:
+                    sd = _session_dir(sid)
+                    if (not sd.exists()) or (_session_age_hours(sd) > DATA_TTL_HOURS):
+                        try:
+                            if s.get("refresh_stop"):
+                                s["refresh_stop"].set()
+                        except Exception:
+                            pass
+                        try:
+                            if s.get("scraper"):
+                                s["scraper"].close()
+                        except Exception:
+                            pass
+                        try:
+                            if s.get("scraper") is not None:
+                                SCRAPER_SEM.release()
+                        except Exception:
+                            pass
+                        remove_keys.append(sid)
+                except Exception:
+                    pass
+            for sid in remove_keys:
+                SESSIONS.pop(sid, None)
         except Exception:
             pass
         stop_evt.wait(1800)  # 30 分钟巡检一次

@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app:Z
+      - ./data:/app/data:Z
+    environment:
+      - DATA_TTL_HOURS=24
+      - SCRAPER_CONCURRENCY=3
+      - SCRAPER_RETRY_AFTER=5
+      - CHROME_BIN=/usr/bin/chromium
+    shm_size: "1g"
+    restart: unless-stopped

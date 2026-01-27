@@ -137,36 +137,33 @@
       return `${s}秒`
     }
 
-    async function load(){
+    async function fetchAndRender(){
       const { session, index } = params()
       if(!session || index<0){ window.location.href = '../'; return }
       document.getElementById('backLink').href = 'records.html?session=' + encodeURIComponent(session)
-      // 基础信息来自列表接口（用于顶部角色/胜负标签）
       const r = await fetch('../api/records?session_id=' + encodeURIComponent(session))
       if(!r.ok){ alert('加载失败: ' + r.status); return }
       const data = await r.json()
       if(!data.rows || !Array.isArray(data.rows) || index >= data.rows.length){ alert('记录不存在'); return }
-      const headers = data.headers || ['玩家角色','日期','玩家人数','存活回合','胜负']
       const row = data.rows[index]
+      const ex = (data.extras && data.extras[index]) || {}
       const [role, date, players, rounds, result] = row
-
-      // 顶部摘要
       document.getElementById('role').textContent = role || '-'
       const tag = document.getElementById('resultTag')
       if((result||'').includes('胜') || (result||'').includes('获胜')){ tag.textContent = '胜利'; tag.className = 'tag win' }
       else if((result||'').includes('败')){ tag.textContent = '失败'; tag.className = 'tag loss' }
       else { tag.textContent = result || '-'; tag.className = 'tag' }
-      // 详情信息来自 /api/record_detail（meta + players）
       const d = await fetch('../api/record_detail?session_id=' + encodeURIComponent(session) + '&index=' + encodeURIComponent(index))
       if(d.ok){
         const detail = await d.json()
         const meta = detail.meta || {}
         const plist = Array.isArray(detail.players) ? detail.players : []
-        document.getElementById('mode').textContent = meta.mode ?? '-'
-        document.getElementById('map').textContent = meta.map ?? '-'
+        const modeText = (ex.mode != null && ex.mode !== '') ? ex.mode : (meta.mode ?? '-')
+        const mapText = (ex.map != null && ex.map !== '') ? ex.map : (meta.map ?? '-')
+        document.getElementById('mode').textContent = modeText
+        document.getElementById('map').textContent = mapText
         document.getElementById('players_line').textContent = meta.playerCount ?? players ?? '-'
         document.getElementById('time').textContent = meta.durationSeconds != null ? fmtDuration(meta.durationSeconds) : (date || '-')
-        // 渲染玩家表格
         const tableData = plist.map(p => ({
           id: p.userId,
           name: p.nickname || '-',
@@ -177,13 +174,25 @@
           rounds: p.turnsSurvived ?? '-'
         }))
         renderPlayersTable(tableData)
-        // 渲染轮次事件与会议
         renderRounds(Array.isArray(detail.rounds) ? detail.rounds : [], plist)
       } else {
-        // 回退：使用列表信息简单占位
         renderPlayersTable([])
       }
+    }
 
+    function setupSSE(){
+      const { session } = params()
+      if(!session) return
+      try{
+        const es = new EventSource('../api/sse?session_id=' + encodeURIComponent(session))
+        es.addEventListener('records', () => { fetchAndRender() })
+        es.addEventListener('detail', () => { fetchAndRender() })
+      }catch(e){}
+    }
+
+    async function load(){
+      await fetchAndRender()
+      setupSSE()
     }
 
     function renderPlayersTable(players){

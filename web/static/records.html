@@ -125,26 +125,42 @@
       table.classList.remove('hidden')
     }
 
-    async function load(){
-      const session = getSession()
-      if(!session){ window.location.href = '../'; return }
-      try{
-        const r = await fetch('../api/records?session_id=' + encodeURIComponent(session))
-        if(!r.ok){ throw new Error('加载失败: ' + r.status) }
-        const data = await r.json()
-        if(data.status && data.status !== 'done'){
-          // 简单轮询等待
-          setTimeout(load, 800)
-          return
-        }
-        render(data)
-        // 行点击跳转
+    let clickBound = false
+    async function fetchAndRender(session){
+      const r = await fetch('../api/records?session_id=' + encodeURIComponent(session))
+      if(!r.ok){ throw new Error('加载失败: ' + r.status) }
+      const data = await r.json()
+      if(data.status && data.status !== 'done'){
+        setTimeout(() => fetchAndRender(session), 800)
+        return
+      }
+      render(data)
+      if(!clickBound){
         tbody.addEventListener('click', (e) => {
           const tr = e.target.closest('tr.clickable')
           if(!tr) return
           const idx = tr.getAttribute('data-index')
           navigateToDetail(session, idx)
         })
+        clickBound = true
+      }
+    }
+
+    function setupSSE(session){
+      try{
+        const es = new EventSource('../api/sse?session_id=' + encodeURIComponent(session))
+        es.addEventListener('records', () => {
+          fetchAndRender(session)
+        })
+      }catch(e){}
+    }
+
+    async function load(){
+      const session = getSession()
+      if(!session){ window.location.href = '../'; return }
+      try{
+        await fetchAndRender(session)
+        setupSSE(session)
       }catch(e){
         alert('加载失败：' + e.message)
       }

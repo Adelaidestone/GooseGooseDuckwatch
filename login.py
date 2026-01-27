@@ -270,6 +270,50 @@ class GaggleFunScraper:
         # 超时仍在登录页，视为失败（未知原因）
         return False
 
+    def save_cookies(self, path):
+        try:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+        except Exception:
+            pass
+        try:
+            cookies = self.driver.get_cookies()
+            with open(path, 'w', encoding='utf-8') as f:
+                json.dump(cookies, f, ensure_ascii=False, indent=2)
+            return True
+        except Exception:
+            return False
+
+    def try_cookie_login(self, cookies_path: str) -> bool:
+        try:
+            if not cookies_path or not os.path.exists(cookies_path):
+                return False
+            # 先打开登录域，才能 add_cookie
+            self.driver.get(self.LOGIN_URL)
+            time.sleep(1)
+            with open(cookies_path, 'r', encoding='utf-8') as f:
+                cookies = json.load(f) or []
+            for c in cookies:
+                try:
+                    cc = {k: v for k, v in c.items() if k in ('name','value','domain','path','expiry','httpOnly','secure','sameSite')}
+                    if 'expiry' in cc and isinstance(cc['expiry'], float):
+                        try:
+                            cc['expiry'] = int(cc['expiry'])
+                        except Exception:
+                            del cc['expiry']
+                    self.driver.add_cookie(cc)
+                except Exception:
+                    pass
+            # 跳转到目标页验证登录状态
+            self.driver.get(self.GAME_STATS_URL)
+            try:
+                self.wait.until(lambda d: d.execute_script("return document.readyState") == "complete")
+            except Exception:
+                pass
+            cur = (self.driver.current_url or '').lower()
+            return 'login' not in cur
+        except Exception:
+            return False
+
     def fetch_game_records(self):
         """获取游戏记录"""
         print("正在获取游戏记录...")
