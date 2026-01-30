@@ -211,6 +211,45 @@
     }
     .form-input::placeholder { color: var(--text-muted); }
 
+    /* 密码框容器 */
+    .password-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .password-wrapper .form-input {
+      padding-right: 42px;
+    }
+    .pwd-toggle {
+      position: absolute;
+      right: 10px;
+      background: none;
+      border: none;
+      padding: 6px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: color 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pwd-toggle:hover {
+      color: var(--main);
+    }
+    .eye-icon {
+      width: 20px;
+      height: 20px;
+    }
+    .eye-icon .eye-closed {
+      display: none;
+    }
+    .eye-icon.hidden .eye-open {
+      display: none;
+    }
+    .eye-icon.hidden .eye-closed {
+      display: inline;
+    }
+
     /* 刷卡区域 */
     .swipe-section {
       margin-top: 20px;
@@ -490,7 +529,6 @@
   <div class="login-card">
     <div class="card-header">
       <h1 class="title">木泗鹅鸭杀查询器</h1>
-      <p class="subtitle">身份验证 · 刷卡登录</p>
     </div>
 
     <div class="form-group">
@@ -500,7 +538,17 @@
 
     <div class="form-group">
       <label class="form-label">密码</label>
-      <input type="password" class="form-input" id="password" placeholder="输入密码" autocomplete="current-password">
+      <div class="password-wrapper">
+        <input type="password" class="form-input" id="password" placeholder="输入密码" autocomplete="current-password">
+        <button type="button" class="pwd-toggle" id="pwdToggle" tabindex="-1">
+          <svg class="eye-icon" id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path class="eye-open" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle class="eye-open" cx="12" cy="12" r="3"></circle>
+            <path class="eye-closed" d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+            <line class="eye-closed" x1="1" y1="1" x2="23" y2="23"></line>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <div class="swipe-section">
@@ -662,6 +710,8 @@
     // DOM
     const emailEl = document.getElementById('email');
     const pwdEl = document.getElementById('password');
+    const pwdToggle = document.getElementById('pwdToggle');
+    const eyeIcon = document.getElementById('eyeIcon');
     const idCard = document.getElementById('idCard');
     const swipeTrack = document.getElementById('swipeTrack');
     const swipeProgress = document.getElementById('swipeProgress');
@@ -850,6 +900,14 @@
     pwdEl.addEventListener('input', () => { updateStatus(); updateLed(); });
     emailEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') pwdEl.focus(); });
     pwdEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
+
+    // 密码显示切换
+    pwdToggle.addEventListener('click', () => {
+      const isHidden = pwdEl.type === 'password';
+      pwdEl.type = isHidden ? 'text' : 'password';
+      eyeIcon.classList.toggle('hidden', !isHidden);
+      SFX.click();
+    });
 
     // 绑定角色点击彩蛋（动态元素）
     function bindRoleClicks() {
