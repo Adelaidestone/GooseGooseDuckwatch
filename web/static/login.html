@@ -4,446 +4,899 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>木泗鹅鸭杀查询器 · 登录</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
       --main: #46a6f8;
-      --bgcolor: #100a21;
-      --bgcolor-card: #1e1535;
+      --bgcolor: #0d0b1a;
+      --bgcolor-card: #1a1230;
       --text: #ffffff;
       --text-secondary: #b3b3b3;
       --text-muted: #707070;
       --gradient-primary: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
       font-family: 'Inter', 'Microsoft YaHei', sans-serif;
       height: 100vh; width: 100vw;
       display: flex; align-items: center; justify-content: center;
-      background: radial-gradient(1200px 600px at 10% 10%, rgba(70,166,248,0.15), transparent 60%),
-                  radial-gradient(1000px 500px at 90% 20%, rgba(255,69,144,0.12), transparent 60%),
-                  radial-gradient(900px 600px at 20% 90%, rgba(195,105,255,0.12), transparent 60%),
-                  var(--bgcolor);
+      background: var(--bgcolor);
       color: var(--text);
       overflow: hidden;
     }
-    .idcard {
-      width: 560px; min-height: 360px;
-      background: linear-gradient(160deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04) 60%), rgba(30,21,53,0.55);
-      padding: 20px 20px 16px 20px;
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: 0 10px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.03) inset;
-      backdrop-filter: blur(8px);
-      display: flex; flex-direction: column; gap: 10px; justify-content: flex-start;
-      position: relative; z-index: 1;
+
+    /* 动态背景 */
+    .space-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at 20% 80%, rgba(70,166,248,0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(255,69,144,0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(195,105,255,0.08) 0%, transparent 70%),
+        var(--bgcolor);
     }
-    h1 {
-      font-size: 22px;
-      text-align: center;
+
+    /* 星星 */
+    .stars { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+    .star {
+      position: absolute;
+      width: 3px; height: 3px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle var(--duration, 3s) ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* 流星 */
+    .meteor {
+      position: fixed;
+      width: 100px; height: 2px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.8), transparent);
+      border-radius: 50%;
+      animation: meteor 3s linear infinite;
+      animation-delay: var(--delay, 0s);
+      opacity: 0;
+    }
+    @keyframes meteor {
+      0% { transform: translateX(0) translateY(0) rotate(-45deg); opacity: 0; }
+      10% { opacity: 1; }
+      100% { transform: translateX(-500px) translateY(500px) rotate(-45deg); opacity: 0; }
+    }
+
+    /* 浮动角色 */
+    .floating-elements { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+    .role-character {
+      position: absolute;
+      width: 68px; height: 68px;
+      border-radius: 50%;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));
+      animation: floatBounce 4s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+      transition: transform 0.3s ease, filter 0.3s ease;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    .role-character:hover {
+      transform: scale(1.2) rotate(10deg);
+      filter: drop-shadow(0 15px 35px rgba(70,166,248,0.5));
+      animation-play-state: paused;
+    }
+    .role-1 { left: 5%; top: 15%; animation-delay: 0s; }
+    .role-2 { right: 8%; top: 18%; animation-delay: 0.5s; }
+    .role-3 { left: 8%; bottom: 22%; animation-delay: 1s; }
+    .role-4 { right: 6%; bottom: 28%; animation-delay: 1.5s; }
+    .role-5 { left: 20%; top: 50%; animation-delay: 0.8s; width: 52px; height: 52px; }
+    .role-6 { right: 18%; top: 55%; animation-delay: 1.2s; width: 52px; height: 52px; }
+
+    @keyframes floatBounce {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-12px) rotate(-3deg); }
+      50% { transform: translateY(-20px) rotate(0deg); }
+      75% { transform: translateY(-12px) rotate(3deg); }
+    }
+
+    @keyframes clickBounce {
+      0% { transform: scale(1); }
+      30% { transform: scale(1.3) rotate(-15deg); }
+      50% { transform: scale(0.9) rotate(10deg); }
+      70% { transform: scale(1.1) rotate(-5deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    /* 跑动角色 */
+    .running-characters {
+      position: fixed;
+      bottom: 8%;
+      left: -200px;
+      z-index: 5;
+      display: flex;
+      gap: 15px;
+      animation: runAcross 10s linear infinite;
+      animation-delay: 5s;
+    }
+    @keyframes runAcross {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(calc(100vw + 400px)); }
+    }
+    .runner {
+      width: 55px; height: 55px;
+      border-radius: 50%;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 15px rgba(0,0,0,0.4));
+      animation: runBounce 0.25s ease-in-out infinite alternate;
+    }
+    .runner:nth-child(2) { animation-delay: 0.12s; }
+    .runner:nth-child(3) { animation-delay: 0.08s; }
+    @keyframes runBounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-6px); }
+    }
+
+    /* 主登录卡片 */
+    .login-card {
+      position: relative;
+      z-index: 10;
+      width: 420px;
+      background: linear-gradient(145deg, rgba(30, 18, 48, 0.9), rgba(20, 12, 35, 0.95));
+      border-radius: 20px;
+      padding: 28px;
+      border: 2px solid rgba(255,255,255,0.1);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05) inset, 0 0 80px rgba(70,166,248,0.08);
+      backdrop-filter: blur(20px);
+      animation: cardSpringIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    @keyframes cardSpringIn {
+      0% { opacity: 0; transform: scale(0.85) translateY(30px); }
+      60% { transform: scale(1.02) translateY(-5px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .card-header { text-align: center; margin-bottom: 20px; }
+    .title {
+      font-size: 24px;
+      font-weight: 900;
       background: var(--gradient-primary);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      margin-bottom: 4px;
+      display: inline-block;
     }
-    .title { font-size: 24px; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-align: center; }
-    .subtitle { color: var(--text-secondary); text-align: center; font-size: 13px; margin-bottom: 6px; }
-    label { color: var(--text-secondary); font-size: 14px; }
-    input {
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-top: 6px;
+      opacity: 0;
+      animation: fadeSlideUp 0.5s ease 0.8s forwards;
+    }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 表单 */
+    .form-group {
+      margin-bottom: 16px;
+      opacity: 0;
+      animation: fadeSlideUp 0.5s ease forwards;
+    }
+    .form-group:nth-child(1) { animation-delay: 1s; }
+    .form-group:nth-child(2) { animation-delay: 1.15s; }
+    .form-label {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .form-input {
       width: 100%;
       padding: 12px 14px;
       border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.08);
-      outline: none;
-      background: rgba(255,255,255,0.03);
+      border: 2px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.3);
       color: var(--text);
-      transition: box-shadow .2s ease, border-color .2s ease;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    input:focus { box-shadow: 0 0 0 3px rgba(70,166,248,0.25); border-color: rgba(70,166,248,0.55); }
-    button {
-      width: 100%; padding: 12px 18px; border: none; border-radius: 10px;
-      background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52%, #ff4590 100%);
-      color: white; font-weight: 700; letter-spacing: .5px; cursor: pointer;
-      box-shadow: 0 10px 20px rgba(0,166,255,0.25), 0 8px 24px rgba(255,69,144,0.18);
-      transition: transform .12s ease, box-shadow .2s ease;
+    .form-input:focus {
+      border-color: var(--main);
+      box-shadow: 0 0 0 4px rgba(70,166,248,0.2), 0 0 15px rgba(70,166,248,0.1);
     }
-    button:hover { transform: translateY(-1px); box-shadow: 0 14px 26px rgba(0,166,255,0.32), 0 10px 28px rgba(255,69,144,0.22); }
-    #msg { text-align: center; color: var(--text-secondary); min-height: 18px; font-size: 13px; }
+    .form-input::placeholder { color: var(--text-muted); }
 
-    /* Parallax layers */
-    #parallax { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-    #stars { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-    .floaters { position: absolute; inset: 0; }
-    .floater { position: absolute; pointer-events: none; opacity: .6; filter: drop-shadow(0 4px 12px rgba(0,0,0,.35)); }
-    .floater.banana { left: 8%; top: 30%; width: 64px; height: 64px; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'><path d='M10 40c10 8 26 10 44 6-8 4-18 8-30 6-6-1-12-4-14-8 0-2 0-4 0-4z' fill='%23f2c84b'/><path d='M12 42c4 5 20 8 34 6-8 2-18 4-26 2-5-1-8-3-8-8z' fill='%23e0a81f'/></svg>"); background-size: contain; background-repeat: no-repeat; animation: floatY 10s ease-in-out infinite, rotateSlow 24s linear infinite; }
-    .floater.pizza { right: 12%; top: 18%; width: 72px; height: 72px; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'><path d='M8 60 L36 8 L64 60 Z' fill='%23f4d38a'/><circle cx='36' cy='40' r='5' fill='%23d8345f'/><circle cx='26' cy='48' r='4' fill='%23d8345f'/><circle cx='46' cy='50' r='4' fill='%23d8345f'/><path d='M12 56 L36 16 L60 56 Z' fill='none' stroke='%23f7b733' stroke-width='6' stroke-linejoin='round'/></svg>"); background-size: contain; background-repeat: no-repeat; animation: floatY 14s ease-in-out infinite reverse, rotateSlow 30s linear infinite reverse; }
-    .floater.helmet { left: 70%; top: 70%; width: 80px; height: 80px; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'><circle cx='40' cy='40' r='28' fill='%23cdd6f4'/><path d='M16 44h48v8a4 4 0 0 1-4 4H20a4 4 0 0 1-4-4z' fill='%2399a1c7'/><rect x='22' y='30' width='36' height='18' rx='9' fill='%233a3f5c'/></svg>"); background-size: contain; background-repeat: no-repeat; animation: floatY 18s ease-in-out infinite, rotateSlow 40s linear infinite; }
-    @keyframes floatY { 0%,100% { transform: translateY(-6px); } 50% { transform: translateY(6px); } }
-    @keyframes rotateSlow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    #cameo { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-    .cameo-run { position: absolute; bottom: 20%; left: -20%; width: 160px; height: 80px; display: flex; gap: 8px; align-items: center; }
-    .cameo-goose, .cameo-duck { width: 72px; height: 72px; background: radial-gradient(circle at 40% 40%, #fff 0%, #f2f2f2 60%, #c9c9c9 100%); border-radius: 50%; box-shadow: 0 6px 20px rgba(0,0,0,.35); }
-    .cameo-duck { background: radial-gradient(circle at 40% 40%, #ffd67a 0%, #f3b338 70%, #d88416 100%); }
-    .move-across { animation: moveAcross 6s linear forwards; }
-    @keyframes moveAcross { 0% { transform: translateX(0); opacity: 0; } 8% { opacity: .95; } 100% { transform: translateX(140vw); opacity: 0; } }
+    /* 刷卡区域 */
+    .swipe-section {
+      margin-top: 20px;
+      opacity: 0;
+      animation: fadeSlideUp 0.5s ease 1.3s forwards;
+      position: relative;
+    }
+    .swipe-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .swipe-label span { color: var(--text-secondary); font-size: 13px; }
+    .status-indicator { display: flex; align-items: center; gap: 6px; }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: all 0.3s ease;
+    }
+    .status-dot.ready { background: #50fa7b; box-shadow: 0 0 10px #50fa7b; }
+    .status-dot.scanning { background: #ffe066; box-shadow: 0 0 10px #ffe066; }
+    .status-dot.error { background: #ff5555; box-shadow: 0 0 10px #ff5555; }
+    .status-text { font-size: 12px; color: var(--text-muted); }
 
-    /* Terminal framing */
-    .terminal { width: 420px; background: #333; border: 4px solid #000; border-radius: 16px; padding: 16px; box-shadow: 10px 10px 0 rgba(0,0,0,.2); position: relative; z-index: 1; font-family: 'Microsoft YaHei','PingFang SC','Noto Sans SC','Source Han Sans SC',sans-serif; }
-    .screen { background: #1a1d23; border: 3px solid #000; border-radius: 10px; padding: 16px; margin-bottom: 16px; color: #50fa7b; }
-    .lcd-hint { margin: 0 0 8px 0; font-size: 12px; opacity: .8; color: #9be3a4; }
-    .lcd-input { width: 100%; background: transparent; border: none; border-bottom: 2px solid #444; color: #e8ffe8; padding: 8px 0; margin-bottom: 12px; outline: none; font-family: inherit; }
-    .lcd-input:focus { border-bottom-color: #50fa7b; }
-    .reader-slot { height: 60px; background: #0e0e0e; border: 3px solid #000; border-radius: 6px; position: relative; margin: 14px 0; overflow: hidden; transition: opacity .2s ease; }
-    .reader-slot.locked { opacity: .55; }
-    .reader-slot.scanning::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(90,200,250,0.18) 45%, rgba(90,200,250,0.35) 50%, rgba(90,200,250,0.18) 55%, rgba(255,255,255,0) 100%); transform: translateX(-100%); animation: slotScan 1.1s linear infinite; pointer-events: none; }
-    @keyframes slotScan { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-    .slot-guide { position: absolute; left: 12px; right: 36px; top: 50%; transform: translateY(-50%); color: #9aa7ad; font-size: 12px; text-align: center; pointer-events: none; }
-    .slot-guide.ok { color: #50fa7b; }
-    .slot-guide.warn { color: #ffe066; }
-    .slot-guide.bad { color: #ff6b6b; }
-    .status-led { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; background: rgba(255,255,255,.25); border-radius: 50%; border: 2px solid #000; box-shadow: inset 0 0 8px rgba(255,255,255,.15); }
-    #loginProgress { position: relative; z-index: 3; }
-    .led-green { background: #50fa7b !important; box-shadow: 0 0 12px #50fa7b, inset 0 0 6px rgba(0,0,0,.35); }
-    .led-yellow { background: #ffe066 !important; box-shadow: 0 0 12px #ffe066, inset 0 0 6px rgba(0,0,0,.35); }
-    .led-red { background: #ff5555 !important; box-shadow: 0 0 12px #ff5555, inset 0 0 6px rgba(0,0,0,.35); }
-    .id-card { width: 120px; height: 72px; background: #DDEEF0; border: 3px solid #000; border-radius: 8px; position: absolute; left: 20px; top: calc(100% - 100px); cursor: grab; user-select: none; padding: 6px; box-sizing: border-box; display: flex; align-items: center; gap: 8px; z-index: 1; }
-    .id-card:active { cursor: grabbing; }
-    .card-goose { width: 28px; height: 28px; background: var(--goose-color, #ffffff); border: 2px solid #000; border-radius: 4px; position: relative; overflow: hidden; }
-    .card-goose svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-    .card-info { display: flex; flex-direction: column; justify-content: space-between; height: 100%; flex: 1; }
-    .card-lines { width: 46px; height: 12px; border-top: 2px solid #000; align-self: flex-end; }
-    .card-lvl { font-weight: 800; font-size: 12px; letter-spacing: .5px; color: #000; }
-    .pickup-arrow { position: absolute; left: 40px; top: calc(100% - 118px); color: #fff; opacity: 0; pointer-events: none; animation: floatUp 1.2s ease-in-out infinite; }
-    .id-card.unlocked + .pickup-arrow, .pickup-arrow.on { opacity: .8; }
-    @keyframes floatUp { 0% { transform: translateY(2px); } 50% { transform: translateY(-4px); } 100% { transform: translateY(2px); } }
-    .terminal.error { animation: shake .38s ease-in-out 1; }
-    @keyframes shake { 0% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } 100% { transform: translateX(0); } }
+    /* 刷卡槽 */
+    .swipe-track {
+      position: relative;
+      height: 70px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.6) 100%);
+      border-radius: 8px;
+      border: 3px solid #444;
+      box-shadow: inset 0 4px 10px rgba(0,0,0,0.5), 0 2px 0 rgba(255,255,255,0.1);
+      overflow: visible;
+    }
+    .swipe-track::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 10px; right: 10px;
+      height: 8px;
+      transform: translateY(-50%);
+      background: linear-gradient(180deg, #222 0%, #333 50%, #222 100%);
+      border-radius: 4px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+    }
+    .swipe-progress {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(0,166,255,0.4), rgba(80,250,123,0.4));
+      transition: width 0.05s linear;
+      border-radius: 5px;
+    }
+    .swipe-hint {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.6);
+      font-size: 13px;
+      pointer-events: none;
+      z-index: 1;
+      transition: opacity 0.2s ease;
+    }
 
-    /* Hidden legacy button scan effect removed in terminal mode */
+    /* LED 指示灯 */
+    .slot-led {
+      position: absolute;
+      right: 12px; top: 50%;
+      transform: translateY(-50%);
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: #555;
+      border: 2px solid #333;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+      z-index: 2;
+      transition: all 0.3s ease;
+    }
+    .slot-led.ready { background: #50fa7b; box-shadow: 0 0 10px #50fa7b, inset 0 1px 3px rgba(0,0,0,0.3); }
+    .slot-led.scanning { background: #ffe066; box-shadow: 0 0 10px #ffe066; animation: ledBlink 0.3s ease-in-out infinite; }
+    .slot-led.success { background: #50fa7b; box-shadow: 0 0 15px #50fa7b; }
+    .slot-led.error { background: #ff5555; box-shadow: 0 0 10px #ff5555; }
+    @keyframes ledBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-    /* Notice board */
-    .notice-board { position: fixed; right: 18px; top: 18px; transform: rotate(-2.5deg); z-index: 2; }
-    .sticky { width: 200px; background: #fff8b8; color: #3a3a3a; border: 1px solid rgba(0,0,0,.05); box-shadow: 0 8px 18px rgba(0,0,0,.25); padding: 12px 14px; border-radius: 6px; transform-origin: top center; animation: swing 6s ease-in-out infinite; }
-    .sticky h4 { font-size: 14px; margin-bottom: 6px; color: #2a2a2a; }
-    .sticky p { font-size: 12px; line-height: 1.4; }
-    @keyframes swing { 0% { transform: rotate(-2.5deg); } 50% { transform: rotate(2.5deg); } 100% { transform: rotate(-2.5deg); } }
+    /* 身份卡 */
+    .id-card {
+      position: absolute;
+      left: -15px; top: 50%;
+      transform: translateY(-50%);
+      width: 130px; height: 82px;
+      background: linear-gradient(145deg, #f0f0f0, #d8d8d8);
+      border-radius: 8px;
+      border: 3px solid #333;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.8);
+      padding: 8px;
+      display: flex;
+      gap: 8px;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      z-index: 10;
+      transition: box-shadow 0.2s ease;
+    }
+    .id-card:hover { box-shadow: 0 8px 25px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.8); }
+    .id-card:active, .id-card.dragging {
+      cursor: grabbing;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+    .id-card-photo {
+      width: 45px; height: 45px;
+      border-radius: 6px;
+      border: 2px solid #333;
+      object-fit: cover;
+      background: #fff;
+      flex-shrink: 0;
+    }
+    .id-card-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-width: 0;
+    }
+    .id-card-name {
+      height: 12px;
+      background: repeating-linear-gradient(0deg, #555 0px, #555 1px, transparent 1px, transparent 4px);
+      background-size: 100% 4px;
+    }
+    .id-card-barcode {
+      height: 14px;
+      background: repeating-linear-gradient(90deg, #333 0px, #333 2px, transparent 2px, transparent 3px, #333 3px, #333 4px, transparent 4px, transparent 6px);
+      border-radius: 2px;
+    }
+    .id-card-chip {
+      position: absolute;
+      top: 8px; right: 8px;
+      width: 22px; height: 16px;
+      background: linear-gradient(135deg, #d4af37, #f4d03f, #d4af37);
+      border-radius: 3px;
+      border: 1px solid #b8860b;
+    }
 
-    .cameo-pelican { position: absolute; bottom: 10%; left: -20%; width: 160px; height: 64px; border-radius: 40px; background: radial-gradient(circle at 30% 50%, #ffffff 0%, #eaeaea 60%, #c7c7c7 100%); box-shadow: 0 6px 20px rgba(0,0,0,.35); }
+    /* 提示箭头 */
+    .swipe-arrow {
+      position: absolute;
+      left: 125px; top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255,255,255,0.8);
+      font-size: 18px;
+      animation: arrowSlide 1s ease-in-out infinite;
+      z-index: 5;
+    }
+    @keyframes arrowSlide {
+      0%, 100% { transform: translateY(-50%) translateX(0); opacity: 0.5; }
+      50% { transform: translateY(-50%) translateX(12px); opacity: 1; }
+    }
+    .swipe-arrow.hidden { display: none; }
 
-    .swipe-task { margin-top: 6px; }
-    .swipe-track { position: relative; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); overflow: hidden; }
-    .swipe-progress { position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: linear-gradient(90deg, rgba(0,166,255,0.22), rgba(195,105,255,0.22)); pointer-events: none; }
-    .swipe-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.78); font-size: 13px; letter-spacing: .5px; pointer-events: none; }
-    .swipe-thumb { position: absolute; top: 0; left: 0; width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(90deg, #00a6ff, #c369ff, #ff4590); box-shadow: 0 6px 16px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; user-select: none; touch-action: none; cursor: grab; }
+    /* 进度条 */
+    .login-progress {
+      margin-top: 14px;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .login-progress.active { opacity: 1; }
+    .login-progress-bar {
+      height: 100%; width: 0%;
+      background: var(--gradient-primary);
+      transition: width 0.3s ease;
+    }
 
-    /* Holographic security sheen on the ID card */
-    .idcard { position: relative; }
-    .idcard::after { content: ""; position: absolute; right: 12px; top: 12px; width: 96px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.35), rgba(255,255,255,0.1)); background-size: 200% 100%; animation: holo 2.8s linear infinite; mix-blend-mode: screen; opacity: .6; pointer-events: none; }
-    @keyframes holo { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    /* 消息 */
+    .message {
+      text-align: center;
+      margin-top: 14px;
+      min-height: 18px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+    }
+    .message.error { color: #ff5555; }
+    .message.success { color: #50fa7b; }
 
-    /* ID Card header */
-    .idcard-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px dashed rgba(255,255,255,0.12); margin-bottom: 6px; }
-    .id-title { font-weight: 700; letter-spacing: .6px; font-size: 14px; color: rgba(255,255,255,0.9); }
-    .chip { width: 42px; height: 28px; border-radius: 6px; background: linear-gradient(135deg,#e1e1e1,#b9b9b9); box-shadow: inset 0 0 0 2px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(255,255,255,0.25); }
+    /* 公告板 - 深色风格 */
+    .notice-board {
+      position: fixed;
+      right: 20px; top: 20px;
+      z-index: 20;
+      animation: noticeSlideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 2s backwards;
+    }
+    @keyframes noticeSlideIn {
+      from { opacity: 0; transform: translateX(50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .notice-card {
+      width: 200px;
+      background: linear-gradient(145deg, rgba(30, 18, 48, 0.95), rgba(20, 12, 35, 0.98));
+      border-radius: 12px;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    .notice-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .notice-icon { font-size: 16px; }
+    .notice-title {
+      font-size: 13px;
+      font-weight: 700;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .notice-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+    .notice-item:last-child { margin-bottom: 0; }
+    .notice-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #50fa7b;
+      flex-shrink: 0;
+    }
+    .notice-dot.blue { background: var(--main); }
 
-    /* Social entry */
-    .social { position: fixed; left: 18px; bottom: 18px; z-index: 2; display: flex; gap: 8px; align-items: center; }
-    .social a { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.08); color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 4px 14px rgba(0,0,0,0.25); }
-    .social a:hover { background: rgba(255,255,255,0.14); }
+    /* 响应式 */
+    @media (max-width: 500px) {
+      .login-card { width: 92%; padding: 20px; }
+      .notice-board { display: none; }
+    }
 
-    /* Reduce motion */
+    /* 减少动画 */
     @media (prefers-reduced-motion: reduce) {
-      * { animation: none !important; transition: none !important; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
 <body>
-  <div id="parallax">
-    <canvas id="stars"></canvas>
-    <div class="floaters">
-      <div class="floater banana"></div>
-      <div class="floater pizza"></div>
-      <div class="floater helmet"></div>
+  <!-- 背景音乐 (轻量懒加载) -->
+  <audio id="bgm" loop preload="none">
+    <source src="../assets/audio/何玉 - 大东北我的家乡 (DJ何鹏版).mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="space-bg"></div>
+  <div class="stars" id="stars"></div>
+  <div class="meteor" style="top: 10%; right: 20%; --delay: 0s;"></div>
+  <div class="meteor" style="top: 30%; right: 40%; --delay: 5s;"></div>
+  <div class="meteor" style="top: 20%; right: 60%; --delay: 10s;"></div>
+
+  <!-- 浮动角色 - 动态随机加载 -->
+  <div class="floating-elements" id="floatingElements"></div>
+
+  <!-- 跑动角色 - 动态随机加载 -->
+  <div class="running-characters" id="runningCharacters"></div>
+
+  <!-- 登录卡片 -->
+  <div class="login-card">
+    <div class="card-header">
+      <h1 class="title">木泗鹅鸭杀查询器</h1>
+      <p class="subtitle">身份验证 · 刷卡登录</p>
     </div>
-    <div id="cameo"></div>
-  </div>
-  <div class="terminal" id="terminal">
-    <div class="title">🦆 木泗鹅鸭杀查询器</div>
-    <div class="screen">
-      <h3 class="lcd-hint">登录验证终端</h3>
-      <input id="email" class="lcd-input" type="text" placeholder="用户名" />
-      <input id="password" class="lcd-input" type="password" placeholder="密码" />
-      <div id="msg" role="status" aria-live="polite"></div>
+
+    <div class="form-group">
+      <label class="form-label">用户名</label>
+      <input type="text" class="form-input" id="email" placeholder="输入用户名或邮箱" autocomplete="username">
     </div>
-    
-    <div class="reader-slot locked" id="slot">
-      <div class="slot-guide" id="slotGuide">滑过右侧即可登录</div>
-      <div class="status-led" id="led"></div>
+
+    <div class="form-group">
+      <label class="form-label">密码</label>
+      <input type="password" class="form-input" id="password" placeholder="输入密码" autocomplete="current-password">
     </div>
-    <div class="swipe-task" id="loginProgress">
-      <div class="swipe-track">
-        <div class="swipe-progress" id="loginProgressBar" style="width:0%"></div>
-        <div class="swipe-label" id="loginProgressLabel"></div>
+
+    <div class="swipe-section">
+      <div class="swipe-label">
+        <span>刷卡验证</span>
+        <div class="status-indicator">
+          <div class="status-dot" id="statusDot"></div>
+          <span class="status-text" id="statusText">等待输入</span>
+        </div>
+      </div>
+
+      <div class="swipe-track" id="swipeTrack">
+        <div class="swipe-progress" id="swipeProgress"></div>
+        <div class="swipe-hint" id="swipeHint">→ 刷卡登录 →</div>
+        <div class="slot-led" id="slotLed"></div>
+
+        <div class="id-card" id="idCard">
+          <img class="id-card-photo" src="../assets/role_logos/BODYGUARD.png" alt="头像">
+          <div class="id-card-info">
+            <div class="id-card-name"></div>
+            <div class="id-card-barcode"></div>
+          </div>
+          <div class="id-card-chip"></div>
+        </div>
+
+
+      </div>
+
+      <div class="login-progress" id="loginProgress">
+        <div class="login-progress-bar" id="loginProgressBar"></div>
       </div>
     </div>
-    <div class="id-card" id="scanCard">
-      <div class="card-goose" title="鹅">
-        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-          <path d="M44 26c0 6-7 10-14 10s-14-4-14-10 7-12 14-12 14 6 14 12z" fill="none" stroke="#000" stroke-width="3" />
-          <circle cx="40" cy="20" r="5" fill="var(--goose-color, #ffffff)" stroke="#000" stroke-width="3" />
-          <circle cx="42" cy="20" r="2" fill="#000" />
-          <path d="M46 22 l10 -3 l-10 -3 z" fill="#f2a900" stroke="#000" stroke-width="2" />
-        </svg>
-      </div>
-      <div class="card-info">
-        <div class="card-lines"></div>
-        <div class="card-lvl">等级 3</div>
-      </div>
-    </div>
+
+    <div class="message" id="message"></div>
   </div>
 
+  <!-- 公告板 -->
   <div class="notice-board">
-    <div class="sticky">
-      <h4>公告板</h4>
-      <p>新功能：对局记录支持角色图标。</p>
-      <p>服务器状态：正常</p>
+    <div class="notice-card">
+      <div class="notice-header">
+        <span class="notice-icon">📋</span>
+        <span class="notice-title">公告板</span>
+      </div>
+      <div class="notice-item">
+        <div class="notice-dot blue"></div>
+        <span>对局记录支持角色图标</span>
+      </div>
+      <div class="notice-item">
+        <div class="notice-dot"></div>
+        <span>服务器状态：正常运行</span>
+      </div>
     </div>
   </div>
-
-
 
   <script>
-    let SESSION_ID = null
-    const msg = document.getElementById('msg')
-    const emailEl = document.getElementById('email')
-    const pwdEl = document.getElementById('password')
-    const terminalEl = document.getElementById('terminal')
-    const slotEl = document.getElementById('slot')
-    const ledEl = document.getElementById('led')
-    const scanCard = document.getElementById('scanCard')
-    const pickupArrow = document.getElementById('pickupArrow')
-    const slotGuide = document.getElementById('slotGuide')
-    const progWrap = document.getElementById('loginProgress')
-    const progressBar = document.getElementById('loginProgressBar')
-    const progressLabel = document.getElementById('loginProgressLabel')
-    const reduceMotion = (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) || false
-    let LOGGING = false
-    let UNLOCKED = false
-    let TRIGGERED = false
-    let PROG_TIMER = null
-    let MSG_TIMER = null
+    // 所有角色logo列表（排除 BODYGUARD 和 icon-* 文件）
+    const ALL_ROLES = [
+      'ADVENTURER', 'ASSASSIN', 'ASTRAL', 'AVENGER', 'BIRDWATCHER', 'CANADIAN',
+      'CANNIBAL', 'CARRIER', 'CELEBRITY', 'CLOWN', 'CORONER', 'CROW', 'CUPID',
+      'DEMOLITIONIST', 'DETECTIVE', 'DODO', 'DRONE', 'DUCK', 'ENGINEER', 'FALCON',
+      'GOOSE', 'GRAVY', 'HAWK', 'HITMAN', 'IDENTITYTHIEF', 'INVISIBILITY',
+      'LOBBYIST', 'LOCKSMITH', 'LOOTER', 'LOVERDUCK', 'MEDIUM', 'MIME', 'MIMIC',
+      'MORPHLING', 'MORTICIAN', 'MUMMY', 'NINJA', 'OWL', 'PARASITE', 'PARTY',
+      'PELICAN', 'PIGEON', 'POLITICIAN', 'PREACHER', 'PROFESSIONAL', 'RABBIT',
+      'RAVEN', 'SCIENTIST', 'SENSOR', 'SERIALKILLER', 'SHERIFF', 'SILENCER',
+      'SNIPER', 'SNITCH', 'SOLDIER', 'SPECTATOR', 'SPOTTER', 'SPY', 'STALKER',
+      'STREETURCHIN', 'SURVIVALIST', 'TECHNICIAN', 'THRALL', 'TRACKER',
+      'UNDERTAKER', 'VAMPIRE', 'VIGILANTE', 'VILLAGER', 'VULTURE', 'WARLOCK'
+    ];
 
-    function showError(text, hold){
-      if(MSG_TIMER){ clearTimeout(MSG_TIMER); MSG_TIMER = null }
-      msg.textContent = String(text||'')
-      const ms = (typeof hold === 'number' && hold > 0) ? hold : 5000
-      MSG_TIMER = setTimeout(()=>{ msg.textContent = ''; MSG_TIMER = null }, ms)
+    // Fisher-Yates 洗牌算法
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
     }
 
-    function setProgress(pct, label){
-      const v = Math.max(0, Math.min(100, Number(pct)||0))
-      if(progressBar){ progressBar.style.width = v + '%' }
-      if(progressLabel && typeof label === 'string'){ progressLabel.textContent = label }
+    // 随机选择不重复的角色
+    function getRandomRoles(count) {
+      return shuffle(ALL_ROLES).slice(0, count);
     }
-    function startProgress(){
-      setProgress(6, '正在登录...')
-      if(PROG_TIMER){ clearInterval(PROG_TIMER); PROG_TIMER=null }
-      let cur = 6
-      PROG_TIMER = setInterval(()=>{
-        cur += Math.random()*4 + 1
-        if(cur > 60) cur = 60
-        setProgress(cur)
-      }, 300)
-    }
-    function finishProgress(){ if(PROG_TIMER){ clearInterval(PROG_TIMER); PROG_TIMER=null } setProgress(100, '完成') }
-    function failProgress(){ if(PROG_TIMER){ clearInterval(PROG_TIMER); PROG_TIMER=null } setProgress(0, '') }
 
-    const SFX = (()=>{
-      let ctx
-      function ensure(){ if(!ctx){ try{ ctx = new (window.AudioContext||window.webkitAudioContext)() }catch(e){} } }
-      function tone(freq, dur, type='sine', gain=.08){ if(!ctx) return; const o=ctx.createOscillator(); const g=ctx.createGain(); o.type=type; o.frequency.value=freq; g.gain.value=gain; o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+dur) }
+    // 创建浮动角色
+    function createFloatingRoles() {
+      const container = document.getElementById('floatingElements');
+      const roles = getRandomRoles(6);
+      const positions = [
+        { class: 'role-1', style: 'left: 5%; top: 15%;' },
+        { class: 'role-2', style: 'right: 8%; top: 18%;' },
+        { class: 'role-3', style: 'left: 8%; bottom: 22%;' },
+        { class: 'role-4', style: 'right: 6%; bottom: 28%;' },
+        { class: 'role-5', style: 'left: 20%; top: 50%; width: 52px; height: 52px;' },
+        { class: 'role-6', style: 'right: 18%; top: 55%; width: 52px; height: 52px;' }
+      ];
+
+      roles.forEach((role, i) => {
+        const img = document.createElement('img');
+        img.className = `role-character ${positions[i].class}`;
+        img.src = `../assets/role_logos/${role}.png`;
+        img.alt = role;
+        img.title = role;
+        img.style.cssText += positions[i].style;
+        container.appendChild(img);
+      });
+    }
+
+    // 创建跑动角色
+    function createRunningRoles() {
+      const container = document.getElementById('runningCharacters');
+      const roles = getRandomRoles(3);
+
+      roles.forEach((role, i) => {
+        const img = document.createElement('img');
+        img.className = 'runner';
+        img.src = `../assets/role_logos/${role}.png`;
+        img.alt = role;
+        if (i === 1) img.style.animationDelay = '0.12s';
+        if (i === 2) img.style.animationDelay = '0.08s';
+        container.appendChild(img);
+      });
+    }
+
+    // 生成星星
+    function createStars() {
+      const container = document.getElementById('stars');
+      for (let i = 0; i < 80; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.setProperty('--duration', (2 + Math.random() * 3) + 's');
+        star.style.setProperty('--delay', Math.random() * 3 + 's');
+        container.appendChild(star);
+      }
+    }
+
+    // 音效
+    const SFX = (() => {
+      let ctx;
+      function ensure() { if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {} } }
+      function tone(freq, dur, type = 'sine', gain = 0.08) {
+        if (!ctx) return;
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = type; o.frequency.value = freq; g.gain.value = gain;
+        o.connect(g); g.connect(ctx.destination);
+        o.start(); o.stop(ctx.currentTime + dur);
+      }
       return {
-        click(){ ensure(); tone(880, .05, 'square', .05) },
-        scan(){ ensure(); tone(660,.08,'sawtooth',.04); setTimeout(()=>tone(880,.08,'sawtooth',.04),100); },
-        success(){ ensure(); tone(523,.08,'sine',.06); setTimeout(()=>tone(659,.10,'sine',.06),120); setTimeout(()=>tone(784,.16,'sine',.06),240); },
-        error(){ ensure(); tone(220,.18,'triangle',.06); }
-      }
-    })()
+        click() { ensure(); tone(880, 0.05, 'square', 0.04); },
+        scan() { ensure(); tone(660, 0.08, 'sawtooth', 0.04); setTimeout(() => tone(880, 0.08, 'sawtooth', 0.04), 100); },
+        success() { ensure(); tone(523, 0.08, 'sine', 0.06); setTimeout(() => tone(659, 0.1, 'sine', 0.06), 120); setTimeout(() => tone(784, 0.16, 'sine', 0.06), 240); },
+        error() { ensure(); tone(220, 0.18, 'triangle', 0.06); }
+      };
+    })();
 
-    function preloadStars(){
-      const c = document.getElementById('stars')
-      if(!c) return
-      const dpr = Math.max(1, window.devicePixelRatio||1)
-      const ctx = c.getContext('2d')
-      let W=0,H=0, stars=[]
-      function resize(){ W = c.clientWidth; H = c.clientHeight; c.width = W*dpr; c.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); stars = Array.from({length: 400}, _=>({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*1.2+0.2, a: Math.random()*0.6+0.2, s: Math.random()*0.2+0.02 })) }
-      function draw(){ ctx.clearRect(0,0,W,H); ctx.fillStyle = '#ffffff'; for(const st of stars){ const tw = (Math.sin(perf*st.s+st.x*0.01)+1)/2; ctx.globalAlpha = st.a*0.6 + tw*0.4; ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, Math.PI*2); ctx.fill() } ctx.globalAlpha = 1 }
-      let perf = 0
-      function tick(t){ perf = (t||0)/1000; draw(); req = requestAnimationFrame(tick) }
-      let req
-      resize(); window.addEventListener('resize', resize); req = requestAnimationFrame(tick)
+    // DOM
+    const emailEl = document.getElementById('email');
+    const pwdEl = document.getElementById('password');
+    const idCard = document.getElementById('idCard');
+    const swipeTrack = document.getElementById('swipeTrack');
+    const swipeProgress = document.getElementById('swipeProgress');
+    const swipeHint = document.getElementById('swipeHint');
+    const swipeArrow = document.getElementById('swipeArrow');
+    const slotLed = document.getElementById('slotLed');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const loginProgress = document.getElementById('loginProgress');
+    const loginProgressBar = document.getElementById('loginProgressBar');
+    const messageEl = document.getElementById('message');
+
+    let SESSION_ID = null;
+    let LOGGING = false;
+    let isDragging = false;
+    let startX = 0, currentX = 0;
+    const cardStartLeft = -15;
+    let maxSwipe = 0;
+
+    function updateStatus() {
+      const hasUser = emailEl.value.trim().length > 0;
+      const hasPass = pwdEl.value.trim().length > 0;
+      const ready = hasUser && hasPass;
+      statusDot.className = 'status-dot' + (ready ? ' ready' : '');
+      statusText.textContent = ready ? '准备就绪' : '等待输入';
     }
 
-    function scheduleCameo(){
-      const host = document.getElementById('cameo')
-      if(!host) return
-      function playRun(){ const wrap = document.createElement('div'); wrap.className = 'cameo-run move-across'; const g = document.createElement('div'); g.className='cameo-goose'; const d = document.createElement('div'); d.className='cameo-duck'; wrap.appendChild(g); wrap.appendChild(d); host.appendChild(wrap); setTimeout(()=>{ host.removeChild(wrap) }, 6500) }
-      function playPelican(){ const p = document.createElement('div'); p.className = 'cameo-pelican move-across'; p.style.animationDuration = '10s'; host.appendChild(p); setTimeout(()=>{ host.removeChild(p) }, 10500) }
-      async function play(){
-        if(window.lottie && lottie.loadAnimation){ playRun() } else { (Math.random() < 0.5) ? playRun() : playPelican() }
-        const next = Math.floor(15000 + Math.random()*15000)
-        setTimeout(play, next)
-      }
-      const first = Math.floor(3000 + Math.random()*4000)
-      setTimeout(play, first)
+    function updateLed() {
+      const hasUser = emailEl.value.trim().length > 0;
+      const hasPass = pwdEl.value.trim().length > 0;
+      slotLed.className = 'slot-led' + ((hasUser && hasPass) ? ' ready' : '');
     }
 
-    function updateLock(){
-      const hasUser = emailEl.value.trim().length > 0
-      const hasPass = pwdEl.value.trim().length > 0
-      UNLOCKED = hasUser && hasPass
-      slotEl.classList.toggle('locked', !UNLOCKED)
-      scanCard.classList.toggle('unlocked', UNLOCKED)
-      if(pickupArrow){ if(UNLOCKED){ pickupArrow.classList.add('on') } else { pickupArrow.classList.remove('on') } }
-      TRIGGERED = false
-      if(slotGuide){ slotGuide.textContent = '滑过右侧即可登录'; slotGuide.className = 'slot-guide' }
+    function showMessage(text, type = '') {
+      messageEl.textContent = text;
+      messageEl.className = 'message ' + type;
+      if (text) setTimeout(() => { if (messageEl.textContent === text) { messageEl.textContent = ''; messageEl.className = 'message'; } }, 5000);
     }
 
-    function bindCardDrag(){
-      let dragging = false, shiftX = 0, shiftY = 0
-      const container = document.getElementById('terminal')
-      function setLED(state){ ledEl.classList.remove('led-green','led-red','led-yellow'); if(state) ledEl.classList.add(state) }
-      function onDown(e){
-        if(!UNLOCKED){ showError('请先填写用户名和密码', 5000); setLED('led-red'); SFX.error(); return }
-        dragging = true; scanCard.style.transition = 'none'; TRIGGERED = false;
-        const rect = scanCard.getBoundingClientRect();
-        shiftX = e.clientX - rect.left; shiftY = e.clientY - rect.top;
-        if(scanCard.setPointerCapture && e.pointerId!=null){ scanCard.setPointerCapture(e.pointerId) }
-        SFX.click()
-      }
-      function onMove(e){
-        if(!dragging) return;
-        const cr = container.getBoundingClientRect();
-        let x = e.clientX - shiftX - cr.left; let y = e.clientY - shiftY - cr.top;
-        scanCard.style.left = x + 'px'; scanCard.style.top = y + 'px';
-        const slotR = slotEl.getBoundingClientRect(); const cardR = scanCard.getBoundingClientRect();
-        const overlap = Math.min(cardR.bottom, slotR.bottom) - Math.max(cardR.top, slotR.top)
-        const vOverlap = overlap > 0 ? overlap : 0
-        const vOk = vOverlap > (cardR.height * 0.5)
-        if(vOk){
-          slotEl.classList.add('scanning'); setLED('led-yellow');
-          if(slotGuide){ slotGuide.textContent = '继续向右滑动'; slotGuide.className = 'slot-guide warn' }
-          const centerX = cardR.left + cardR.width/2
-          if(!TRIGGERED && centerX > slotR.right){
-            TRIGGERED = true
-            slotEl.classList.remove('scanning')
-            setLED('led-yellow'); if(slotGuide){ slotGuide.textContent='正在验证中......'; slotGuide.className='slot-guide warn' }
-            SFX.scan(); doLogin()
-          }
+    function setProgress(pct, show = true) {
+      loginProgress.classList.toggle('active', show);
+      loginProgressBar.style.width = pct + '%';
+    }
+
+    // 刷卡逻辑
+    function initCardDrag() {
+      const trackW = swipeTrack.offsetWidth;
+      const cardW = idCard.offsetWidth;
+      maxSwipe = trackW - cardW + 15;
+
+      idCard.addEventListener('pointerdown', (e) => {
+        if (LOGGING) return;
+        const hasUser = emailEl.value.trim().length > 0;
+        const hasPass = pwdEl.value.trim().length > 0;
+        if (!hasUser || !hasPass) {
+          showMessage('请先输入用户名和密码', 'error');
+          SFX.error();
+          slotLed.className = 'slot-led error';
+          setTimeout(() => updateLed(), 1500);
+          return;
+        }
+        isDragging = true;
+        startX = e.clientX;
+        currentX = 0;
+        idCard.setPointerCapture(e.pointerId);
+        idCard.classList.add('dragging');
+        swipeHint.style.opacity = '0';
+        swipeArrow.classList.add('hidden');
+        SFX.click();
+        e.preventDefault();
+      });
+
+      idCard.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const dx = e.clientX - startX;
+        currentX = Math.max(0, Math.min(dx, maxSwipe));
+        idCard.style.left = (cardStartLeft + currentX) + 'px';
+        const progress = (currentX / maxSwipe) * 100;
+        swipeProgress.style.width = progress + '%';
+
+        if (progress > 80) {
+          slotLed.className = 'slot-led ready';
+          statusDot.className = 'status-dot ready';
+          statusText.textContent = '松开验证';
+        } else if (progress > 20) {
+          slotLed.className = 'slot-led scanning';
+          statusDot.className = 'status-dot scanning';
+          statusText.textContent = '继续滑动...';
+        }
+      });
+
+      idCard.addEventListener('pointerup', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        idCard.classList.remove('dragging');
+        const progress = (currentX / maxSwipe) * 100;
+        if (progress >= 80) {
+          idCard.style.left = (cardStartLeft + maxSwipe) + 'px';
+          swipeProgress.style.width = '100%';
+          slotLed.className = 'slot-led success';
+          SFX.scan();
+          doLogin();
         } else {
-          slotEl.classList.remove('scanning'); setLED(null);
-          if(slotGuide){ slotGuide.textContent = '滑过右侧即可登录'; slotGuide.className = 'slot-guide' }
+          resetCard();
         }
-      }
-      function finish(){
-        if(!dragging) return; dragging = false;
-        const slotR = slotEl.getBoundingClientRect(); const cardR = scanCard.getBoundingClientRect();
-        const overlap = Math.min(cardR.bottom, slotR.bottom) - Math.max(cardR.top, slotR.top)
-        const vOverlap = overlap > 0 ? overlap : 0
-        const vOk = vOverlap > (cardR.height * 0.5)
-        const centerX = cardR.left + cardR.width/2
-        const success = vOk && (centerX > slotR.right)
-        slotEl.classList.remove('scanning')
-        if(success){
-          setLED('led-yellow'); if(slotGuide){ slotGuide.textContent='正在验证中......'; slotGuide.className='slot-guide warn' }
-          SFX.scan(); doLogin()
-        } else {
-          if(slotGuide){ slotGuide.textContent = '滑过右侧即可登录'; slotGuide.className = 'slot-guide' }
-          reset()
-        }
-      }
-      function reset(){ scanCard.style.transition = 'all .35s'; scanCard.style.left = '20px'; scanCard.style.top = 'calc(100% - 100px)'; setTimeout(()=>{ scanCard.style.transition = '' }, 360) }
-      scanCard.addEventListener('pointerdown', onDown)
-      window.addEventListener('pointermove', onMove)
-      window.addEventListener('pointerup', finish)
+      });
+
+      idCard.addEventListener('pointercancel', () => {
+        if (isDragging) { isDragging = false; idCard.classList.remove('dragging'); resetCard(); }
+      });
     }
 
-    
-
-    function flashError(){ terminalEl.classList.add('error'); setTimeout(()=>terminalEl.classList.remove('error'), 700) }
-
-    async function preload(){
-      try{
-        const r = await fetch('../api/preload', { method: 'POST' })
-        if(!r.ok){ throw new Error('预加载失败: ' + r.status) }
-        const data = await r.json()
-        SESSION_ID = data.session_id
-      }catch(e){
-        showError('连接失败：' + e.message, 5000)
-      }
+    function resetCard() {
+      idCard.style.transition = 'left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+      idCard.style.left = cardStartLeft + 'px';
+      currentX = 0;
+      swipeProgress.style.width = '0%';
+      swipeHint.style.opacity = '';
+      swipeArrow.classList.remove('hidden');
+      setTimeout(() => { idCard.style.transition = ''; }, 400);
+      updateStatus();
+      updateLed();
     }
 
-    async function doLogin(){
-      if(LOGGING) return
-      const email = emailEl.value.trim()
-      const password = pwdEl.value.trim()
-      if(!email || !password){ showError('请输入用户名和密码', 5000); SFX.error(); flashError(); return }
-      SFX.scan(); startProgress()
-      LOGGING = true
-      try{
-        const doRequest = async () => {
-          const payload = { email, password }
-          if(SESSION_ID){ payload.session_id = SESSION_ID }
-          return fetch('../api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+    // 登录
+    async function doLogin() {
+      if (LOGGING) return;
+      const email = emailEl.value.trim();
+      const password = pwdEl.value.trim();
+      if (!email || !password) { showMessage('请输入用户名和密码', 'error'); SFX.error(); resetCard(); return; }
+
+      LOGGING = true;
+      statusDot.className = 'status-dot scanning';
+      statusText.textContent = '验证中...';
+      setProgress(10, true);
+
+      let prog = 10;
+      const progInterval = setInterval(() => { prog += Math.random() * 8; if (prog > 80) prog = 80; setProgress(prog); }, 200);
+
+      try {
+        const payload = { email, password };
+        if (SESSION_ID) payload.session_id = SESSION_ID;
+
+        const resp = await fetch('../api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        clearInterval(progInterval);
+
+        if (!resp.ok) {
+          const text = await resp.text();
+          let detail = text;
+          try { const json = JSON.parse(text); detail = json.detail || text; } catch(e) {}
+          throw new Error(detail);
         }
-        const parseDetail = async (resp) => {
-          try {
-            const txt = await resp.text()
-            try { const j = JSON.parse(txt); return (j && j.detail) ? j.detail : txt } catch(_) { return txt }
-          } catch(e){ return '请求失败' }
-        }
-        let r = await doRequest()
-        if(!r.ok){
-          const detail = await parseDetail(r)
-          const needRetry = (r.status === 404) && (detail.includes('无效的会话') || detail.includes('已过期'))
-          if(needRetry){
-            if(progressLabel){ progressLabel.textContent = '重新连接中...' }
-            SESSION_ID = null
-            r = await doRequest()
-          } else {
-            throw new Error(detail || ('HTTP ' + r.status))
-          }
-        }
-        if(!r.ok){ const detail2 = await parseDetail(r); throw new Error(detail2 || ('HTTP ' + r.status)) }
-        const data = await r.json()
-        if(!data.ok){ throw new Error('登录失败') }
-        if(data.session_id){ SESSION_ID = data.session_id }
-        SFX.success(); finishProgress()
-        window.location.href = 'records.html?session=' + encodeURIComponent(SESSION_ID)
-      }catch(e){
-        if(slotGuide){ slotGuide.textContent = '登录失败：' + e.message; slotGuide.className = 'slot-guide bad' }
-        try{ ledEl.classList.remove('led-green','led-yellow','led-red'); ledEl.classList.add('led-red') }catch(_){}
-        try{ slotEl.classList.remove('scanning') }catch(_){}
-        SFX.error(); flashError(); failProgress()
+
+        const data = await resp.json();
+        if (!data.ok) throw new Error('登录失败');
+        if (data.session_id) SESSION_ID = data.session_id;
+
+        setProgress(100);
+        statusDot.className = 'status-dot ready';
+        statusText.textContent = '验证成功!';
+        showMessage('登录成功，正在跳转...', 'success');
+        SFX.success();
+        setTimeout(() => { window.location.href = 'records.html?session=' + encodeURIComponent(SESSION_ID); }, 800);
+
+      } catch (err) {
+        clearInterval(progInterval);
+        setProgress(0, false);
+        statusDot.className = 'status-dot error';
+        statusText.textContent = '验证失败';
+        showMessage('登录失败: ' + err.message, 'error');
+        SFX.error();
+        resetCard();
       } finally {
-        LOGGING = false
+        LOGGING = false;
       }
     }
 
-    document.addEventListener('DOMContentLoaded', ()=>{
-      if(!reduceMotion){
-        preloadStars()
-        scheduleCameo()
-      }
-      bindCardDrag()
-      emailEl.addEventListener('input', updateLock)
-      pwdEl.addEventListener('input', updateLock)
-      updateLock()
-    })
-    emailEl.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ doLogin() } })
-    pwdEl.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ doLogin() } })
+    // 输入监听
+    emailEl.addEventListener('input', () => { updateStatus(); updateLed(); });
+    pwdEl.addEventListener('input', () => { updateStatus(); updateLed(); });
+    emailEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') pwdEl.focus(); });
+    pwdEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
+
+    // 绑定角色点击彩蛋（动态元素）
+    function bindRoleClicks() {
+      document.querySelectorAll('.role-character').forEach(role => {
+        role.addEventListener('click', () => {
+          SFX.click();
+          const messages = ['嘎嘎嘎！', '我不是内鬼！', '有人在通风管道！', '投他！我看到了！', '紧急会议！', '谁是鹅？谁是鸭？', '我刚做完任务！', '他跟着我！', '我在监控室看到的！'];
+          showMessage(messages[Math.floor(Math.random() * messages.length)], '');
+          role.style.animation = 'none';
+          role.offsetHeight;
+          role.style.animation = 'clickBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          setTimeout(() => { role.style.animation = ''; }, 500);
+        });
+      });
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      createStars();
+      createFloatingRoles();
+      createRunningRoles();
+      bindRoleClicks();
+      initCardDrag();
+      updateStatus();
+      updateLed();
+
+      // 背景音乐 - 用户首次交互后播放
+      const bgm = document.getElementById('bgm');
+      bgm.volume = 0.3;
+      const playBgm = () => {
+        bgm.play().catch(() => {});
+        document.body.removeEventListener('click', playBgm);
+        document.body.removeEventListener('keydown', playBgm);
+      };
+      document.body.addEventListener('click', playBgm);
+      document.body.addEventListener('keydown', playBgm);
+
+      // 预热浏览器并创建会话，缩短登录耗时
+      fetch('../api/preload', { method: 'POST' })
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (data && data.session_id) {
+            SESSION_ID = data.session_id;
+          }
+        })
+        .catch(() => {});
+    });
   </script>
 </body>
 </html>

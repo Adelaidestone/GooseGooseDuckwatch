@@ -314,7 +314,7 @@ class GaggleFunScraper:
         except Exception:
             return False
 
-    def fetch_game_records(self):
+    def fetch_game_records(self, save_path: str = None):
         """获取游戏记录"""
         print("正在获取游戏记录...")
         self.driver.get(self.GAME_STATS_URL)
@@ -526,13 +526,30 @@ class GaggleFunScraper:
         result = self._wait_for_search_matches(timeout=25)
         if result:
             try:
-                out_dir = os.path.join(os.path.dirname(__file__), 'data')
-                os.makedirs(out_dir, exist_ok=True)
-                ts = datetime.now().strftime('%Y%m%d_%H%M%S')
-                out_path = os.path.join(out_dir, f'SearchMatches_{ts}.json')
-                with open(out_path, 'w', encoding='utf-8') as f:
-                    json.dump(result, f, ensure_ascii=False, indent=2)
-                print(f"SearchMatches 响应已保存: {out_path}")
+                if save_path:
+                    dir_path = os.path.dirname(save_path)
+                    try:
+                        os.makedirs(dir_path, exist_ok=True)
+                    except Exception:
+                        pass
+                    tmp_path = save_path + ".tmp"
+                    with open(tmp_path, 'w', encoding='utf-8') as f:
+                        json.dump(result, f, ensure_ascii=False, indent=2)
+                    try:
+                        os.replace(tmp_path, save_path)
+                    except Exception:
+                        # 回退：直接写最终文件
+                        with open(save_path, 'w', encoding='utf-8') as f:
+                            json.dump(result, f, ensure_ascii=False, indent=2)
+                    print(f"SearchMatches 响应已保存: {save_path}")
+                else:
+                    out_dir = os.path.join(os.path.dirname(__file__), 'data', '对局记录文件夹')
+                    os.makedirs(out_dir, exist_ok=True)
+                    ts = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    out_path = os.path.join(out_dir, f'SearchMatches_{ts}.json')
+                    with open(out_path, 'w', encoding='utf-8') as f:
+                        json.dump(result, f, ensure_ascii=False, indent=2)
+                    print(f"SearchMatches 响应已保存: {out_path}")
             except Exception as e:
                 print(f"保存 SearchMatches 响应失败: {e}")
         else:

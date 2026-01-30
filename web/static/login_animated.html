@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>木泗鹅鸭杀查询器 · 登录</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --main: #46a6f8;
+      --bgcolor: #0d0b1a;
+      --bgcolor-card: #1a1230;
+      --text: #ffffff;
+      --text-secondary: #b3b3b3;
+      --text-muted: #707070;
+      --gradient-primary: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
+      --goose-white: #f5f5f5;
+      --duck-yellow: #ffc940;
+      --impostor-red: #c51111;
+      --crewmate-cyan: #38fedc;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+      height: 100vh; width: 100vw;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bgcolor);
+      color: var(--text);
+      overflow: hidden;
+      perspective: 1000px;
+    }
+
+    /* 动态背景 - 太空星空 */
+    .space-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at 20% 80%, rgba(70,166,248,0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(255,69,144,0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(195,105,255,0.08) 0%, transparent 70%),
+        var(--bgcolor);
+    }
+
+    /* 星星粒子 */
+    .stars {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .star {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle var(--duration, 3s) ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* 流星 */
+    .meteor {
+      position: fixed;
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.8), transparent);
+      border-radius: 50%;
+      animation: meteor 3s linear infinite;
+      animation-delay: var(--delay, 0s);
+      opacity: 0;
+    }
+    @keyframes meteor {
+      0% { transform: translateX(0) translateY(0) rotate(-45deg); opacity: 0; }
+      10% { opacity: 1; }
+      100% { transform: translateX(-500px) translateY(500px) rotate(-45deg); opacity: 0; }
+    }
+
+    /* 浮动的游戏元素 */
+    .floating-elements {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* 角色图片 */
+    .role-character {
+      position: absolute;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));
+      animation: floatBounce 4s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+      transition: transform 0.3s ease, filter 0.3s ease;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    .role-character:hover {
+      transform: scale(1.2) rotate(10deg);
+      filter: drop-shadow(0 15px 35px rgba(70,166,248,0.5));
+      animation-play-state: paused;
+    }
+    .role-1 { left: 5%; top: 15%; animation-delay: 0s; }
+    .role-2 { right: 8%; top: 20%; animation-delay: 0.5s; }
+    .role-3 { left: 8%; bottom: 25%; animation-delay: 1s; }
+    .role-4 { right: 5%; bottom: 30%; animation-delay: 1.5s; }
+    .role-5 { left: 18%; top: 45%; animation-delay: 0.8s; width: 56px; height: 56px; }
+    .role-6 { right: 15%; top: 55%; animation-delay: 1.2s; width: 56px; height: 56px; }
+
+    /* Spring弹跳动画 - 模拟Remotion的spring效果 */
+    @keyframes floatBounce {
+      0%, 100% {
+        transform: translateY(0) rotate(0deg);
+      }
+      25% {
+        transform: translateY(-15px) rotate(-3deg);
+      }
+      50% {
+        transform: translateY(-25px) rotate(0deg);
+      }
+      75% {
+        transform: translateY(-15px) rotate(3deg);
+      }
+    }
+
+    @keyframes clickBounce {
+      0% { transform: scale(1); }
+      30% { transform: scale(1.3) rotate(-15deg); }
+      50% { transform: scale(0.9) rotate(10deg); }
+      70% { transform: scale(1.1) rotate(-5deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    /* 游戏任务图标浮动 */
+    .task-icon {
+      position: absolute;
+      font-size: 32px;
+      animation: taskFloat 5s ease-in-out infinite;
+      opacity: 0.6;
+    }
+    .task-1 { left: 5%; top: 50%; animation-delay: 0.2s; }
+    .task-2 { right: 5%; top: 40%; animation-delay: 0.7s; }
+    .task-3 { left: 20%; top: 75%; animation-delay: 1.2s; }
+    .task-4 { right: 18%; bottom: 15%; animation-delay: 1.7s; }
+
+    @keyframes taskFloat {
+      0%, 100% { transform: translateY(0) rotate(-5deg); opacity: 0.4; }
+      50% { transform: translateY(-20px) rotate(5deg); opacity: 0.7; }
+    }
+
+    /* 主登录卡片 - Spring入场动画 */
+    .login-card {
+      position: relative;
+      z-index: 10;
+      width: 440px;
+      background: linear-gradient(145deg, rgba(30, 18, 48, 0.9), rgba(20, 12, 35, 0.95));
+      border-radius: 24px;
+      padding: 32px;
+      border: 2px solid rgba(255,255,255,0.1);
+      box-shadow:
+        0 25px 50px rgba(0,0,0,0.5),
+        0 0 0 1px rgba(255,255,255,0.05) inset,
+        0 0 100px rgba(70,166,248,0.1);
+      backdrop-filter: blur(20px);
+      animation: cardSpringIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      transform-origin: center center;
+    }
+
+    @keyframes cardSpringIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(40px);
+      }
+      60% {
+        transform: scale(1.02) translateY(-5px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    /* 卡片顶部装饰 - 会议室风格 */
+    .card-header {
+      text-align: center;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .emergency-btn {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 16px;
+      background: radial-gradient(circle at 30% 30%, #ff6b6b, #c51111);
+      border-radius: 50%;
+      border: 4px solid #8b0000;
+      box-shadow:
+        0 8px 0 #8b0000,
+        0 12px 20px rgba(0,0,0,0.4),
+        inset 0 -5px 15px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.1s ease;
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    .emergency-btn:hover {
+      transform: translateY(2px);
+      box-shadow:
+        0 6px 0 #8b0000,
+        0 8px 15px rgba(0,0,0,0.4),
+        inset 0 -5px 15px rgba(0,0,0,0.3);
+    }
+
+    .emergency-btn:active {
+      transform: translateY(6px);
+      box-shadow:
+        0 2px 0 #8b0000,
+        0 4px 10px rgba(0,0,0,0.4),
+        inset 0 -5px 15px rgba(0,0,0,0.3);
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 8px 0 #8b0000, 0 12px 20px rgba(0,0,0,0.4), inset 0 -5px 15px rgba(0,0,0,0.3), 0 0 20px rgba(255,0,0,0.2); }
+      50% { box-shadow: 0 8px 0 #8b0000, 0 12px 20px rgba(0,0,0,0.4), inset 0 -5px 15px rgba(0,0,0,0.3), 0 0 40px rgba(255,0,0,0.4); }
+    }
+
+    .emergency-btn svg {
+      width: 40px;
+      height: 40px;
+      fill: white;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+
+    /* 打字机效果标题 */
+    .title {
+      font-size: 26px;
+      font-weight: 900;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 1px;
+    }
+
+    .title-typewriter {
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      animation: typewriter 1.5s steps(12) 0.5s forwards;
+      width: 0;
+    }
+
+    @keyframes typewriter {
+      to { width: 100%; }
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 3px;
+      height: 1em;
+      background: var(--main);
+      margin-left: 2px;
+      animation: blink 0.8s step-end infinite;
+      vertical-align: text-bottom;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-top: 8px;
+      opacity: 0;
+      animation: fadeSlideUp 0.5s ease 1.8s forwards;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 输入框区域 */
+    .form-group {
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeSlideUp 0.5s ease forwards;
+    }
+    .form-group:nth-child(1) { animation-delay: 2s; }
+    .form-group:nth-child(2) { animation-delay: 2.2s; }
+
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .form-label svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 2px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.3);
+      color: var(--text);
+      font-size: 15px;
+      outline: none;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .form-input:focus {
+      border-color: var(--main);
+      box-shadow: 0 0 0 4px rgba(70,166,248,0.2), 0 0 20px rgba(70,166,248,0.1);
+      transform: scale(1.01);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* 刷卡登录区域 */
+    .swipe-section {
+      margin-top: 24px;
+      opacity: 0;
+      animation: fadeSlideUp 0.5s ease 2.4s forwards;
+    }
+
+    .swipe-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .swipe-label span {
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: all 0.3s ease;
+    }
+
+    .status-dot.ready {
+      background: #50fa7b;
+      box-shadow: 0 0 10px #50fa7b;
+      animation: statusPulse 1.5s ease-in-out infinite;
+    }
+
+    .status-dot.scanning {
+      background: #ffe066;
+      box-shadow: 0 0 10px #ffe066;
+    }
+
+    .status-dot.error {
+      background: #ff5555;
+      box-shadow: 0 0 10px #ff5555;
+    }
+
+    @keyframes statusPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .status-text {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* 刷卡区域 */
+    .swipe-section {
+      margin-top: 24px;
+      opacity: 0;
+      animation: fadeSlideUp 0.5s ease 2.4s forwards;
+      position: relative;
+      padding-bottom: 120px;
+    }
+
+    /* 刷卡轨道 - 卡槽样式 */
+    .swipe-track {
+      position: relative;
+      height: 70px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.6) 100%);
+      border-radius: 8px;
+      border: 3px solid #444;
+      box-shadow: inset 0 4px 10px rgba(0,0,0,0.5), 0 2px 0 rgba(255,255,255,0.1);
+      overflow: visible;
+    }
+
+    /* 刷卡槽内部凹槽 */
+    .swipe-track::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 10px;
+      right: 10px;
+      height: 8px;
+      transform: translateY(-50%);
+      background: linear-gradient(180deg, #222 0%, #333 50%, #222 100%);
+      border-radius: 4px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+    }
+
+    .swipe-progress {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(0,166,255,0.4), rgba(80,250,123,0.4));
+      transition: width 0.05s linear;
+      border-radius: 5px;
+    }
+
+    .swipe-hint {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.6);
+      font-size: 13px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* 刷卡槽指示灯 */
+    .slot-led {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #555;
+      border: 2px solid #333;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+      z-index: 2;
+      transition: all 0.3s ease;
+    }
+
+    .slot-led.ready {
+      background: #50fa7b;
+      box-shadow: 0 0 10px #50fa7b, inset 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .slot-led.scanning {
+      background: #ffe066;
+      box-shadow: 0 0 10px #ffe066, inset 0 1px 3px rgba(0,0,0,0.3);
+      animation: ledBlink 0.3s ease-in-out infinite;
+    }
+
+    .slot-led.success {
+      background: #50fa7b;
+      box-shadow: 0 0 15px #50fa7b, inset 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .slot-led.error {
+      background: #ff5555;
+      box-shadow: 0 0 10px #ff5555, inset 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    @keyframes ledBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* 身份卡样式 */
+    .id-card {
+      position: absolute;
+      left: -20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 140px;
+      height: 90px;
+      background: linear-gradient(145deg, #f0f0f0, #d8d8d8);
+      border-radius: 10px;
+      border: 3px solid #333;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.8);
+      padding: 8px;
+      display: flex;
+      gap: 8px;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      z-index: 10;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .id-card:hover {
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+
+    .id-card:active, .id-card.dragging {
+      cursor: grabbing;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+
+    .id-card-photo {
+      width: 50px;
+      height: 50px;
+      border-radius: 6px;
+      border: 2px solid #333;
+      object-fit: cover;
+      background: #fff;
+      flex-shrink: 0;
+    }
+
+    .id-card-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-width: 0;
+    }
+
+    .id-card-name {
+      height: 14px;
+      background: repeating-linear-gradient(0deg, #555 0px, #555 1px, transparent 1px, transparent 5px);
+      background-size: 100% 5px;
+    }
+
+    .id-card-barcode {
+      height: 16px;
+      background: repeating-linear-gradient(90deg, #333 0px, #333 2px, transparent 2px, transparent 3px, #333 3px, #333 4px, transparent 4px, transparent 6px);
+      border-radius: 2px;
+    }
+
+    .id-card-chip {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 24px;
+      height: 18px;
+      background: linear-gradient(135deg, #d4af37, #f4d03f, #d4af37);
+      border-radius: 3px;
+      border: 1px solid #b8860b;
+    }
+
+    /* 提示箭头 */
+    .swipe-arrow {
+      position: absolute;
+      left: 130px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255,255,255,0.8);
+      font-size: 20px;
+      animation: arrowSlide 1s ease-in-out infinite;
+      z-index: 5;
+    }
+
+    @keyframes arrowSlide {
+      0%, 100% { transform: translateY(-50%) translateX(0); opacity: 0.5; }
+      50% { transform: translateY(-50%) translateX(15px); opacity: 1; }
+    }
+
+    .swipe-arrow.hidden { display: none; }
+
+    /* 进度显示 */
+    .login-progress {
+      margin-top: 16px;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .login-progress.active {
+      opacity: 1;
+    }
+
+    .login-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--gradient-primary);
+      transition: width 0.3s ease;
+    }
+
+    /* 消息提示 */
+    .message {
+      text-align: center;
+      margin-top: 16px;
+      min-height: 20px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+    }
+
+    .message.error {
+      color: #ff5555;
+    }
+
+    .message.success {
+      color: #50fa7b;
+    }
+
+    /* 公告板 - 便签风格 */
+    .notice-board {
+      position: fixed;
+      right: 20px;
+      top: 20px;
+      z-index: 20;
+      animation: stickyDrop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 3s backwards;
+    }
+
+    @keyframes stickyDrop {
+      from {
+        opacity: 0;
+        transform: translateY(-50px) rotate(-10deg);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) rotate(-2deg);
+      }
+    }
+
+    .sticky-note {
+      width: 200px;
+      background: linear-gradient(135deg, #fff8b8, #fff3a0);
+      color: #3a3a3a;
+      padding: 16px;
+      border-radius: 4px;
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.3),
+        0 1px 3px rgba(0,0,0,0.1);
+      transform: rotate(-2deg);
+      animation: stickySwing 4s ease-in-out infinite;
+      position: relative;
+    }
+
+    .sticky-note::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 16px;
+      background: rgba(200,50,50,0.8);
+      border-radius: 2px;
+    }
+
+    @keyframes stickySwing {
+      0%, 100% { transform: rotate(-2deg); }
+      50% { transform: rotate(2deg); }
+    }
+
+    .sticky-note h4 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #2a2a2a;
+    }
+
+    .sticky-note p {
+      font-size: 12px;
+      line-height: 1.5;
+      margin-bottom: 4px;
+    }
+
+    /* 角色跑过动画 */
+    .running-characters {
+      position: fixed;
+      bottom: 10%;
+      left: -200px;
+      z-index: 5;
+      display: flex;
+      gap: 20px;
+      animation: runAcross 8s linear infinite;
+      animation-delay: 5s;
+    }
+
+    @keyframes runAcross {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(calc(100vw + 400px)); }
+    }
+
+    .runner {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 15px rgba(0,0,0,0.4));
+      animation: runBounce 0.3s ease-in-out infinite alternate;
+    }
+
+    .runner:nth-child(2) { animation-delay: 0.15s; }
+    .runner:nth-child(3) { animation-delay: 0.1s; }
+
+    @keyframes runBounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-8px); }
+    }
+
+    /* 投票UI元素 */
+    .vote-indicator {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(30,21,53,0.9);
+      padding: 12px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      animation: slideInLeft 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 3.5s backwards;
+    }
+
+    @keyframes slideInLeft {
+      from { transform: translateX(-100px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .vote-count {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .vote-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .vote-number {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--crewmate-cyan);
+    }
+
+    .vote-label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* 响应式 */
+    @media (max-width: 500px) {
+      .login-card {
+        width: 90%;
+        padding: 24px;
+      }
+      .notice-board, .vote-indicator {
+        display: none;
+      }
+    }
+
+    /* 减少动画偏好 */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 太空背景 -->
+  <div class="space-bg"></div>
+
+  <!-- 星星 -->
+  <div class="stars" id="stars"></div>
+
+  <!-- 流星 -->
+  <div class="meteor" style="top: 10%; right: 20%; --delay: 0s;"></div>
+  <div class="meteor" style="top: 30%; right: 40%; --delay: 4s;"></div>
+  <div class="meteor" style="top: 20%; right: 60%; --delay: 8s;"></div>
+
+  <!-- 浮动游戏元素 -->
+  <div class="floating-elements">
+    <!-- 角色图片 - 使用真实的游戏角色logo -->
+    <img class="role-character role-1" src="../assets/role_logos/GOOSE.png" alt="鹅" title="鹅">
+    <img class="role-character role-2" src="../assets/role_logos/DUCK.png" alt="鸭" title="鸭">
+    <img class="role-character role-3" src="../assets/role_logos/SHERIFF.png" alt="警长" title="警长">
+    <img class="role-character role-4" src="../assets/role_logos/ASSASSIN.png" alt="刺客" title="刺客">
+    <img class="role-character role-5" src="../assets/role_logos/DETECTIVE.png" alt="侦探" title="侦探">
+    <img class="role-character role-6" src="../assets/role_logos/PELICAN.png" alt="鹈鹕" title="鹈鹕">
+
+    <!-- 任务图标 -->
+    <div class="task-icon task-1">🔧</div>
+    <div class="task-icon task-2">⚡</div>
+    <div class="task-icon task-3">📡</div>
+    <div class="task-icon task-4">🗺️</div>
+  </div>
+
+  <!-- 跑动的角色 -->
+  <div class="running-characters">
+    <img class="runner" src="../assets/role_logos/CANNIBAL.png" alt="食鸟鸭">
+    <img class="runner" src="../assets/role_logos/VIGILANTE.png" alt="正义使者">
+    <img class="runner" src="../assets/role_logos/SPY.png" alt="间谍">
+  </div>
+
+  <!-- 主登录卡片 -->
+  <div class="login-card">
+    <div class="card-header">
+      <!-- 紧急会议按钮 -->
+      <div class="emergency-btn" id="emergencyBtn" title="紧急会议!">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-2h-2v2zm0-4h2V7h-2v6z"/>
+        </svg>
+      </div>
+      <h1 class="title">
+        <span class="title-typewriter">木泗鹅鸭杀查询器</span><span class="cursor"></span>
+      </h1>
+      <p class="subtitle">身份验证 · 刷卡登录系统</p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        用户名
+      </label>
+      <input type="text" class="form-input" id="email" placeholder="输入用户名或邮箱" autocomplete="username">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">
+        <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+        密码
+      </label>
+      <input type="password" class="form-input" id="password" placeholder="输入密码" autocomplete="current-password">
+    </div>
+
+    <div class="swipe-section">
+      <div class="swipe-label">
+        <span>刷卡验证</span>
+        <div class="status-indicator">
+          <div class="status-dot" id="statusDot"></div>
+          <span class="status-text" id="statusText">等待输入</span>
+        </div>
+      </div>
+
+      <div class="swipe-track" id="swipeTrack">
+        <div class="swipe-progress" id="swipeProgress"></div>
+        <div class="swipe-hint" id="swipeHint">→ 刷卡登录 →</div>
+        <div class="slot-led" id="slotLed"></div>
+
+        <!-- 身份卡在卡槽内 -->
+        <div class="id-card" id="idCard">
+          <img class="id-card-photo" src="../assets/role_logos/BODYGUARD.png" alt="头像">
+          <div class="id-card-info">
+            <div class="id-card-name"></div>
+            <div class="id-card-barcode"></div>
+          </div>
+          <div class="id-card-chip"></div>
+        </div>
+
+        <!-- 提示箭头 -->
+        <div class="swipe-arrow" id="swipeArrow">→→</div>
+      </div>
+
+      <div class="login-progress" id="loginProgress">
+        <div class="login-progress-bar" id="loginProgressBar"></div>
+      </div>
+    </div>
+
+    <div class="message" id="message"></div>
+  </div>
+
+  <!-- 公告板 -->
+  <div class="notice-board">
+    <div class="sticky-note">
+      <h4>📋 公告板</h4>
+      <p>✨ 新功能：对局记录支持角色图标</p>
+      <p>🟢 服务器状态：正常运行</p>
+      <p>🦆 今日在线：42名玩家</p>
+    </div>
+  </div>
+
+  <!-- 投票指示器 -->
+  <div class="vote-indicator">
+    <div class="vote-count">
+      <svg class="vote-icon" viewBox="0 0 24 24" fill="#38fedc">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+      </svg>
+      <div>
+        <div class="vote-number">0</div>
+        <div class="vote-label">已登录</div>
+      </div>
+    </div>
+    <div class="vote-count">
+      <svg class="vote-icon" viewBox="0 0 24 24" fill="#ff5555">
+        <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
+      </svg>
+      <div>
+        <div class="vote-number">0</div>
+        <div class="vote-label">被踢出</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 生成星星
+    function createStars() {
+      const container = document.getElementById('stars');
+      const count = 100;
+      for (let i = 0; i < count; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.setProperty('--duration', (2 + Math.random() * 3) + 's');
+        star.style.setProperty('--delay', Math.random() * 3 + 's');
+        container.appendChild(star);
+      }
+    }
+
+    // 音效系统
+    const SFX = (() => {
+      let ctx;
+      function ensure() {
+        if (!ctx) {
+          try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+        }
+      }
+      function tone(freq, dur, type = 'sine', gain = 0.08) {
+        if (!ctx) return;
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = type;
+        o.frequency.value = freq;
+        g.gain.value = gain;
+        o.connect(g);
+        g.connect(ctx.destination);
+        o.start();
+        o.stop(ctx.currentTime + dur);
+      }
+      return {
+        click() { ensure(); tone(880, 0.05, 'square', 0.04); },
+        scan() { ensure(); tone(660, 0.08, 'sawtooth', 0.04); setTimeout(() => tone(880, 0.08, 'sawtooth', 0.04), 100); },
+        success() { ensure(); tone(523, 0.08, 'sine', 0.06); setTimeout(() => tone(659, 0.1, 'sine', 0.06), 120); setTimeout(() => tone(784, 0.16, 'sine', 0.06), 240); },
+        error() { ensure(); tone(220, 0.18, 'triangle', 0.06); },
+        emergency() { ensure(); tone(800, 0.15, 'square', 0.1); setTimeout(() => tone(600, 0.15, 'square', 0.1), 200); setTimeout(() => tone(800, 0.15, 'square', 0.1), 400); }
+      };
+    })();
+
+    // DOM 元素
+    const emailEl = document.getElementById('email');
+    const pwdEl = document.getElementById('password');
+    const idCard = document.getElementById('idCard');
+    const swipeTrack = document.getElementById('swipeTrack');
+    const swipeProgress = document.getElementById('swipeProgress');
+    const swipeHint = document.getElementById('swipeHint');
+    const swipeArrow = document.getElementById('swipeArrow');
+    const slotLed = document.getElementById('slotLed');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const loginProgress = document.getElementById('loginProgress');
+    const loginProgressBar = document.getElementById('loginProgressBar');
+    const messageEl = document.getElementById('message');
+    const emergencyBtn = document.getElementById('emergencyBtn');
+
+    let SESSION_ID = null;
+    let LOGGING = false;
+    let isDragging = false;
+    let startX = 0;
+    let currentX = 0;
+    let cardStartLeft = -20;
+    let maxSwipe = 0;
+
+    // 更新状态
+    function updateStatus() {
+      const hasUser = emailEl.value.trim().length > 0;
+      const hasPass = pwdEl.value.trim().length > 0;
+      const ready = hasUser && hasPass;
+
+      statusDot.className = 'status-dot' + (ready ? ' ready' : '');
+      statusText.textContent = ready ? '准备就绪' : '等待输入';
+      swipeHint.textContent = ready ? '← 滑动ID卡登录 →' : '请先填写账号密码';
+    }
+
+    // 显示消息
+    function showMessage(text, type = '') {
+      messageEl.textContent = text;
+      messageEl.className = 'message ' + type;
+      if (text) {
+        setTimeout(() => {
+          if (messageEl.textContent === text) {
+            messageEl.textContent = '';
+            messageEl.className = 'message';
+          }
+        }, 5000);
+      }
+    }
+
+    // 进度条
+    function setProgress(pct, show = true) {
+      loginProgress.classList.toggle('active', show);
+      loginProgressBar.style.width = pct + '%';
+    }
+
+    // 身份卡刷卡逻辑 - 从左向右滑动
+    function initCardDrag() {
+      const trackW = swipeTrack.offsetWidth;
+      const cardW = idCard.offsetWidth;
+      maxSwipe = trackW - cardW + 20; // 右侧终点
+
+      idCard.addEventListener('pointerdown', (e) => {
+        if (LOGGING) return;
+        const hasUser = emailEl.value.trim().length > 0;
+        const hasPass = pwdEl.value.trim().length > 0;
+        if (!hasUser || !hasPass) {
+          showMessage('请先输入用户名和密码', 'error');
+          SFX.error();
+          slotLed.className = 'slot-led error';
+          setTimeout(() => updateLed(), 1500);
+          return;
+        }
+
+        isDragging = true;
+        startX = e.clientX;
+        currentX = 0;
+        idCard.setPointerCapture(e.pointerId);
+        idCard.classList.add('dragging');
+        swipeHint.style.opacity = '0';
+        swipeArrow.classList.add('hidden');
+        SFX.click();
+        e.preventDefault();
+      });
+
+      idCard.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+
+        const dx = e.clientX - startX;
+        currentX = Math.max(0, Math.min(dx, maxSwipe));
+
+        idCard.style.left = (cardStartLeft + currentX) + 'px';
+
+        const progress = (currentX / maxSwipe) * 100;
+        swipeProgress.style.width = progress + '%';
+
+        // LED 反馈
+        if (progress > 80) {
+          slotLed.className = 'slot-led ready';
+          statusDot.className = 'status-dot ready';
+          statusText.textContent = '松开验证';
+        } else if (progress > 20) {
+          slotLed.className = 'slot-led scanning';
+          statusDot.className = 'status-dot scanning';
+          statusText.textContent = '继续滑动...';
+        }
+      });
+
+      idCard.addEventListener('pointerup', (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        idCard.classList.remove('dragging');
+
+        const progress = (currentX / maxSwipe) * 100;
+
+        if (progress >= 80) {
+          // 刷卡成功
+          idCard.style.left = (cardStartLeft + maxSwipe) + 'px';
+          swipeProgress.style.width = '100%';
+          slotLed.className = 'slot-led success';
+          SFX.scan();
+          doLogin();
+        } else {
+          // 没滑到头，弹回原位
+          resetCard();
+        }
+      });
+
+      idCard.addEventListener('pointercancel', () => {
+        if (isDragging) {
+          isDragging = false;
+          idCard.classList.remove('dragging');
+          resetCard();
+        }
+      });
+    }
+
+    function updateLed() {
+      const hasUser = emailEl.value.trim().length > 0;
+      const hasPass = pwdEl.value.trim().length > 0;
+      slotLed.className = 'slot-led' + ((hasUser && hasPass) ? ' ready' : '');
+    }
+
+    function resetCard() {
+      idCard.style.transition = 'left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+      idCard.style.left = cardStartLeft + 'px';
+      currentX = 0;
+      swipeProgress.style.width = '0%';
+      swipeHint.style.opacity = '';
+      swipeArrow.classList.remove('hidden');
+
+      setTimeout(() => {
+        idCard.style.transition = '';
+      }, 400);
+
+      updateStatus();
+      updateLed();
+    }
+
+    // 登录逻辑
+    async function doLogin() {
+      if (LOGGING) return;
+
+      const email = emailEl.value.trim();
+      const password = pwdEl.value.trim();
+
+      if (!email || !password) {
+        showMessage('请输入用户名和密码', 'error');
+        SFX.error();
+        resetSwipe();
+        return;
+      }
+
+      LOGGING = true;
+      statusDot.className = 'status-dot scanning';
+      statusText.textContent = '验证中...';
+      setProgress(10, true);
+
+      // 模拟进度
+      let prog = 10;
+      const progInterval = setInterval(() => {
+        prog += Math.random() * 8;
+        if (prog > 80) prog = 80;
+        setProgress(prog);
+      }, 200);
+
+      try {
+        const payload = { email, password };
+        if (SESSION_ID) payload.session_id = SESSION_ID;
+
+        const resp = await fetch('../api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        clearInterval(progInterval);
+
+        if (!resp.ok) {
+          const text = await resp.text();
+          let detail = text;
+          try {
+            const json = JSON.parse(text);
+            detail = json.detail || text;
+          } catch(e) {}
+          throw new Error(detail);
+        }
+
+        const data = await resp.json();
+        if (!data.ok) throw new Error('登录失败');
+
+        if (data.session_id) SESSION_ID = data.session_id;
+
+        setProgress(100);
+        statusDot.className = 'status-dot ready';
+        statusText.textContent = '验证成功!';
+        showMessage('登录成功，正在跳转...', 'success');
+        SFX.success();
+
+        setTimeout(() => {
+          window.location.href = 'records.html?session=' + encodeURIComponent(SESSION_ID);
+        }, 800);
+
+      } catch (err) {
+        clearInterval(progInterval);
+        setProgress(0, false);
+        statusDot.className = 'status-dot error';
+        statusText.textContent = '验证失败';
+        showMessage('登录失败: ' + err.message, 'error');
+        SFX.error();
+        resetCard();
+      } finally {
+        LOGGING = false;
+      }
+    }
+
+    // 紧急会议按钮彩蛋
+    emergencyBtn.addEventListener('click', () => {
+      SFX.emergency();
+      emergencyBtn.style.transform = 'scale(0.9)';
+      setTimeout(() => {
+        emergencyBtn.style.transform = '';
+      }, 100);
+      showMessage('紧急会议! 但是...你还没登录呢 🦆', '');
+    });
+
+    // 回车键登录
+    emailEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') pwdEl.focus(); });
+    pwdEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
+
+    // 输入监听
+    emailEl.addEventListener('input', () => { updateStatus(); updateLed(); });
+    pwdEl.addEventListener('input', () => { updateStatus(); updateLed(); });
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      createStars();
+      initCardDrag();
+      updateStatus();
+      updateLed();
+
+      // 角色点击彩蛋
+      document.querySelectorAll('.role-character').forEach(role => {
+        role.addEventListener('click', () => {
+          SFX.click();
+          const messages = [
+            '嘎嘎嘎！🦆',
+            '我不是内鬼！',
+            '有人在通风管道！',
+            '我刚做完任务！',
+            '投他！我看到了！',
+            '紧急会议！',
+            '谁是鹅？谁是鸭？',
+            '我在电气室修电线...'
+          ];
+          const msg = messages[Math.floor(Math.random() * messages.length)];
+          showMessage(msg, '');
+
+          // 弹跳动画
+          role.style.animation = 'none';
+          role.offsetHeight; // 触发 reflow
+          role.style.animation = 'clickBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          setTimeout(() => {
+            role.style.animation = '';
+          }, 500);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
