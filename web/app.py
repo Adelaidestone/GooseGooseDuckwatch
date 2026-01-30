@@ -40,6 +40,11 @@ app.mount("/data/role_logos", StaticFiles(directory=str(PROJECT_DIR / "data" / "
 app.mount("/assets/audio", StaticFiles(directory=str(PROJECT_DIR / "data" / "audio")), name="audio")
 
 
+@app.get("/favicon.png")
+def serve_favicon():
+    return FileResponse(str(PROJECT_DIR / "data" / "gaggle-logo.png"), media_type="image/png")
+
+
 class FetchReq(BaseModel):
     email: str
     password: str

@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/favicon.png">
   <title>木泗鹅鸭杀查询器 · 登录</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
   <style>
@@ -508,8 +509,8 @@
   </style>
 </head>
 <body>
-  <!-- 背景音乐 (轻量懒加载) -->
-  <audio id="bgm" loop preload="none">
+  <!-- 背景音乐 -->
+  <audio id="bgm" loop preload="auto">
     <source src="../assets/audio/何玉 - 大东北我的家乡 (DJ何鹏版).mp3" type="audio/mpeg">
   </audio>
 
@@ -934,16 +935,19 @@
       updateStatus();
       updateLed();
 
-      // 背景音乐 - 用户首次交互后播放
+      // 背景音乐 - 尝试立即播放，失败则等待用户交互
       const bgm = document.getElementById('bgm');
       bgm.volume = 0.3;
-      const playBgm = () => {
-        bgm.play().catch(() => {});
-        document.body.removeEventListener('click', playBgm);
-        document.body.removeEventListener('keydown', playBgm);
-      };
-      document.body.addEventListener('click', playBgm);
-      document.body.addEventListener('keydown', playBgm);
+      bgm.play().catch(() => {
+        // 浏览器阻止自动播放，等待用户首次交互
+        const playBgm = () => {
+          bgm.play().catch(() => {});
+          document.body.removeEventListener('click', playBgm);
+          document.body.removeEventListener('keydown', playBgm);
+        };
+        document.body.addEventListener('click', playBgm);
+        document.body.addEventListener('keydown', playBgm);
+      });
 
       // 预热浏览器并创建会话，缩短登录耗时
       fetch('../api/preload', { method: 'POST' })
