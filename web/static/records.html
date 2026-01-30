@@ -161,6 +161,10 @@
       try{
         await fetchAndRender(session)
         setupSSE(session)
+        // 页面关闭时通知后端关闭会话
+        window.addEventListener('pagehide', () => {
+          navigator.sendBeacon('../api/session/close?session_id=' + encodeURIComponent(session));
+        });
       }catch(e){
         alert('加载失败：' + e.message)
       }

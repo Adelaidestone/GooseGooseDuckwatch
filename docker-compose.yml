@@ -9,7 +9,7 @@ services:
       - ./data:/app/data:Z
     environment:
       - DATA_TTL_HOURS=24
-      - SCRAPER_CONCURRENCY=3
+      - SCRAPER_CONCURRENCY=0
       - SCRAPER_RETRY_AFTER=5
       - CHROME_BIN=/usr/bin/chromium
     shm_size: "1g"

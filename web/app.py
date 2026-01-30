@@ -33,7 +33,7 @@ SCRAPER_CONCURRENCY = int(os.getenv("SCRAPER_CONCURRENCY", "0"))
 SCRAPER_RETRY_AFTER = int(os.getenv("SCRAPER_RETRY_AFTER", "10"))  # 秒
 SCRAPER_SEM = threading.Semaphore(SCRAPER_CONCURRENCY if SCRAPER_CONCURRENCY > 0 else 1000000000)
 
-app = FastAPI(title="GooseGooseDuck 游戏记录 - API")
+app = FastAPI(title="GooseGooseDuck 游戏记录 - API", docs_url=None, redoc_url=None, openapi_url=None)
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 app.mount("/assets/role_logos", StaticFiles(directory=str(PROJECT_DIR / "data" / "role_logos")), name="role_logos")
 app.mount("/data/role_logos", StaticFiles(directory=str(PROJECT_DIR / "data" / "role_logos")), name="role_logos_compat")
@@ -1053,10 +1053,17 @@ def _janitor_loop(stop_evt: threading.Event):
         # 清理内存会话与浏览器
         try:
             remove_keys = []
+            now = time.time()
             for sid, s in list(SESSIONS.items()):
                 try:
                     sd = _session_dir(sid)
-                    if (not sd.exists()) or (_session_age_hours(sd) > DATA_TTL_HOURS):
+                    # 检查 30 分钟无活动
+                    la = s.get("last_active")
+                    inactive_30min = la is not None and (now - la) >= 1800
+                    # 检查 24 小时过期
+                    expired_24h = (not sd.exists()) or (_session_age_hours(sd) > DATA_TTL_HOURS)
+
+                    if inactive_30min or expired_24h:
                         try:
                             if s.get("refresh_stop"):
                                 s["refresh_stop"].set()
@@ -1084,7 +1091,7 @@ def _janitor_loop(stop_evt: threading.Event):
             _cleanup_archive()
         except Exception:
             pass
-        stop_evt.wait(1800)  # 30 分钟巡检一次
+        stop_evt.wait(300)  # 5 分钟巡检一次
 
 @app.on_event("startup")
 def _start_janitor():

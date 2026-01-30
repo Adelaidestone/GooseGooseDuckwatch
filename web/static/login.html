@@ -958,6 +958,13 @@
           }
         })
         .catch(() => {});
+
+      // 页面关闭时通知后端关闭会话
+      window.addEventListener('pagehide', () => {
+        if (SESSION_ID) {
+          navigator.sendBeacon('../api/session/close?session_id=' + encodeURIComponent(SESSION_ID));
+        }
+      });
     });
   </script>
 </body>
