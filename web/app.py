@@ -30,9 +30,9 @@ BASE_DIR = Path(__file__).parent.resolve()
 PROJECT_DIR = BASE_DIR.parent.resolve()
 
 # ---- 超时配置 ----
-SESSION_MAX_AGE_HOURS = int(os.getenv("SESSION_MAX_AGE_HOURS", "24"))  # 会话最大生存时间
-SESSION_IDLE_TIMEOUT_MINUTES = int(os.getenv("SESSION_IDLE_TIMEOUT_MINUTES", "30"))  # 会话空闲超时
-SSE_CONNECTION_MAX_AGE_HOURS = int(os.getenv("SSE_CONNECTION_MAX_AGE_HOURS", "24"))  # SSE连接最大生存时间
+SESSION_MAX_AGE_HOURS = int(os.getenv("SESSION_MAX_AGE_HOURS", "2"))  # 会话最大生存时间（2小时）
+SESSION_IDLE_TIMEOUT_MINUTES = int(os.getenv("SESSION_IDLE_TIMEOUT_MINUTES", "30"))  # 会话空闲超时（30分钟）
+SSE_CONNECTION_MAX_AGE_HOURS = int(os.getenv("SSE_CONNECTION_MAX_AGE_HOURS", "2"))  # SSE连接最大生存时间（2小时）
 
 # ---- 抓取并发闸配置 ----
 # ---- 抓取并发闸配置 ----
