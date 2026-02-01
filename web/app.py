@@ -17,6 +17,8 @@ import time
 import threading
 import uvicorn
 from queue import Queue, Empty
+import subprocess
+import sys
 
 # from web.scraper import GaggleScraper  # 注释：停用基于前端 DOM 的抓取
 from login import GaggleFunScraper
@@ -26,6 +28,11 @@ from datetime import datetime, timezone
 
 BASE_DIR = Path(__file__).parent.resolve()
 PROJECT_DIR = BASE_DIR.parent.resolve()
+
+# ---- 超时配置 ----
+SESSION_MAX_AGE_HOURS = int(os.getenv("SESSION_MAX_AGE_HOURS", "24"))  # 会话最大生存时间
+SESSION_IDLE_TIMEOUT_MINUTES = int(os.getenv("SESSION_IDLE_TIMEOUT_MINUTES", "30"))  # 会话空闲超时
+SSE_CONNECTION_MAX_AGE_HOURS = int(os.getenv("SSE_CONNECTION_MAX_AGE_HOURS", "24"))  # SSE连接最大生存时间
 
 # ---- 抓取并发闸配置 ----
 # ---- 抓取并发闸配置 ----
@@ -54,7 +61,42 @@ class LoginReq(BaseModel):
     email: str
     password: str
 
-# 内存会话存储：{session_id: { 'scraper': GaggleScraper|None, 'status': str, 'data': dict|None }}
+# ---- 强制杀死进程的辅助函数 ----
+def _force_kill_scraper(scraper):
+    """强制杀死Selenium浏览器进程（不依赖 close() 方法）"""
+    try:
+        if not scraper:
+            return
+        try:
+            # 尝试正常关闭
+            if hasattr(scraper, 'driver') and scraper.driver:
+                try:
+                    scraper.driver.quit()
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
+        # 查找并杀死相关的Chrome进程
+        try:
+            if sys.platform == 'win32':
+                # Windows: 杀死所有 chromedriver.exe 和 chrome.exe
+                subprocess.run(['taskkill', '/F', '/IM', 'chromedriver.exe'],
+                             stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, timeout=2)
+            elif sys.platform == 'darwin':
+                # macOS: 杀死 Chrome 进程
+                subprocess.run(['pkill', '-9', '-f', 'chromedriver'],
+                             stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, timeout=2)
+            else:
+                # Linux: 杀死 chromedriver 进程
+                subprocess.run(['pkill', '-9', 'chromedriver'],
+                             stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, timeout=2)
+        except Exception:
+            pass
+    except Exception:
+        pass
+
+# 内存会话存储：{session_id: { 'scraper': GaggleScraper|None, 'status': str, 'data': dict|None, 'created_at': float }}
 SESSIONS = {}
 
 # 角色映射
@@ -270,6 +312,7 @@ def api_preload():
             "sse_queues": [],
             "refresh_thread": None,
             "refresh_stop": None,
+            "created_at": time.time(),
             "last_active": time.time(),
         }
         return {"session_id": session_id, "status": "ready"}
@@ -305,6 +348,7 @@ def api_login(req: LoginReq = Body(...)):
             "sse_queues": [],
             "refresh_thread": None,
             "refresh_stop": None,
+            "created_at": time.time(),
             "last_active": time.time(),
         }
         SESSIONS[session_id] = s
@@ -821,24 +865,51 @@ def _ensure_session_scraper(session_id: str):
             pass
 
 def _refresh_loop(session_id: str, stop_evt: threading.Event):
+    """后台刷新线程：定期爬取游戏记录
+
+    超时机制：
+    - 如果 SSE 连接断开，5分钟后自动退出
+    - 如果无活动超过 SESSION_IDLE_TIMEOUT_MINUTES，自动退出
+    - 全局超时：SESSION_MAX_AGE_HOURS 内必须退出
+    """
+    refresh_start_time = time.time()
+
     while not stop_evt.is_set():
         try:
             s = SESSIONS.get(session_id)
             if not s:
                 return
+
+            # 检查全局超时（基于会话创建时间）
+            created_at = s.get("created_at", refresh_start_time)
+            session_age_hours = (time.time() - created_at) / 3600.0
+            if session_age_hours > SESSION_MAX_AGE_HOURS:
+                break
+
             queues = s.get("sse_queues", [])
             if not queues:
-                break
+                # SSE 连接断开，再等 5 分钟看看是否重新连接
+                disconnect_wait = 5 * 60
+                if stop_evt.wait(disconnect_wait):
+                    return
+                # 5分钟后仍无连接，退出
+                if not s.get("sse_queues"):
+                    break
+
             try:
                 la = s.get("last_active")
             except Exception:
                 la = None
-            if la is not None and (time.time() - la) >= 1800:
+
+            # 空闲超时检查
+            if la is not None and (time.time() - la) >= SESSION_IDLE_TIMEOUT_MINUTES * 60:
                 break
+
             _ensure_session_scraper(session_id)
             scraper: GaggleFunScraper = s.get("scraper")
             if not scraper:
                 return
+
             # 抓取最新 SearchMatches（直写会话文件）
             search_dst = _session_searchmatches_path(session_id)
             lock = s.get("lock")
@@ -847,9 +918,11 @@ def _refresh_loop(session_id: str, stop_evt: threading.Event):
                     scraper.fetch_game_records(save_path=str(search_dst))
             else:
                 scraper.fetch_game_records(save_path=str(search_dst))
+
             # 可选：归档并清理
             _maybe_archive_searchmatches(search_dst)
             _cleanup_archive()
+
             # 比对 matchIds，抓取新增详情
             try:
                 if (search_dst and Path(search_dst).exists()):
@@ -861,10 +934,12 @@ def _refresh_loop(session_id: str, stop_evt: threading.Event):
                     new_ids = []
             except Exception:
                 new_ids = []
+
             old_ids = s.get("match_ids") or []
             added = [mid for mid in new_ids if mid not in set(old_ids)]
             s["match_ids"] = new_ids
             any_detail = False
+
             for mid in added:
                 try:
                     if lock:
@@ -877,19 +952,25 @@ def _refresh_loop(session_id: str, stop_evt: threading.Event):
                         any_detail = True
                 except Exception:
                     pass
+
             # 通知前端 records/detail 更新
             _broadcast_sse(session_id, "records", {"version": int(time.time())})
             if any_detail:
                 _broadcast_sse(session_id, "detail", {"type": "added"})
+
         except Exception:
             pass
+
         stop_evt.wait(REFRESH_INTERVAL_SECONDS)
+
+    # 线程退出前的清理
     try:
         s = SESSIONS.get(session_id)
         if s:
             try:
-                if s.get("scraper"):
-                    s["scraper"].close()
+                scraper = s.get("scraper")
+                if scraper:
+                    _force_kill_scraper(scraper)
             except Exception:
                 pass
             try:
@@ -1039,59 +1120,126 @@ def _session_age_hours(p: Path) -> float:
         return DATA_TTL_HOURS + 1
 
 def _janitor_loop(stop_evt: threading.Event):
+    """清理过期会话和僵尸进程的后台任务"""
     try:
         SESS_ROOT.mkdir(parents=True, exist_ok=True)
     except Exception:
         pass
+
     while not stop_evt.is_set():
         try:
+            # 清理文件系统中的过期会话目录
             for d in SESS_ROOT.iterdir():
                 if d.is_dir() and _session_age_hours(d) > DATA_TTL_HOURS:
                     shutil.rmtree(d, ignore_errors=True)
         except Exception:
             pass
-        # 清理内存会话与浏览器
+
+        # 强制清理内存会话与浏览器进程
         try:
             remove_keys = []
             now = time.time()
+
             for sid, s in list(SESSIONS.items()):
                 try:
                     sd = _session_dir(sid)
-                    # 检查 30 分钟无活动
-                    la = s.get("last_active")
-                    inactive_30min = la is not None and (now - la) >= 1800
-                    # 检查 24 小时过期
-                    expired_24h = (not sd.exists()) or (_session_age_hours(sd) > DATA_TTL_HOURS)
 
-                    if inactive_30min or expired_24h:
+                    # 获取会话创建时间和最后活动时间
+                    created_at = s.get("created_at", now)
+                    la = s.get("last_active", created_at)
+
+                    session_age_hours = (now - created_at) / 3600.0
+                    idle_minutes = (now - la) / 60.0
+
+                    # 判断是否需要清理
+                    should_remove = False
+                    reason = None
+
+                    # 1. 绝对超时：会话超过最大生存时间
+                    if session_age_hours > SESSION_MAX_AGE_HOURS:
+                        should_remove = True
+                        reason = f"会话超过{SESSION_MAX_AGE_HOURS}小时（已运行{session_age_hours:.1f}小时）"
+
+                    # 2. 空闲超时：无活动超过配置的时间
+                    elif idle_minutes > SESSION_IDLE_TIMEOUT_MINUTES:
+                        should_remove = True
+                        reason = f"空闲{SESSION_IDLE_TIMEOUT_MINUTES}分钟（已空闲{idle_minutes:.1f}分钟）"
+
+                    # 3. SSE 连接断开且刷新线程已停止
+                    elif not s.get("sse_queues") and not s.get("refresh_thread"):
+                        idle_without_connection = (now - la) / 60.0
+                        if idle_without_connection > 5:  # 5分钟内没连接就删除
+                            should_remove = True
+                            reason = "无活跃连接（无SSE/无刷新线程）"
+
+                    # 4. 文件系统目录已过期
+                    elif (not sd.exists()) or (_session_age_hours(sd) > DATA_TTL_HOURS):
+                        should_remove = True
+                        reason = "会话文件已过期"
+
+                    if should_remove:
+                        # 先停止刷新线程
                         try:
                             if s.get("refresh_stop"):
                                 s["refresh_stop"].set()
                         except Exception:
                             pass
+
+                        # 强制关闭 Selenium
                         try:
-                            if s.get("scraper"):
-                                s["scraper"].close()
+                            scraper = s.get("scraper")
+                            if scraper:
+                                _force_kill_scraper(scraper)
                         except Exception:
                             pass
+
+                        # 释放并发令牌
                         try:
                             if s.get("scraper") is not None:
                                 SCRAPER_SEM.release()
                         except Exception:
                             pass
+
+                        # 强制断开所有 SSE 连接
+                        try:
+                            sse_queues = s.get("sse_queues", [])
+                            for q in sse_queues:
+                                try:
+                                    q.put_nowait({"event": "close", "data": json.dumps({"reason": "session_timeout"})})
+                                except Exception:
+                                    pass
+                        except Exception:
+                            pass
+
+                        # 清理会话数据
+                        s["scraper"] = None
+                        s["refresh_thread"] = None
+                        s["refresh_stop"] = None
+                        s["sse_queues"] = []
+
                         remove_keys.append(sid)
+
                 except Exception:
                     pass
+
+            # 移除标记的会话
             for sid in remove_keys:
-                SESSIONS.pop(sid, None)
+                try:
+                    SESSIONS.pop(sid, None)
+                except Exception:
+                    pass
+
         except Exception:
             pass
+
         # 定期清理归档目录
         try:
             _cleanup_archive()
         except Exception:
             pass
-        stop_evt.wait(300)  # 5 分钟巡检一次
+
+        # 每5分钟巡检一次
+        stop_evt.wait(300)
 
 @app.on_event("startup")
 def _start_janitor():

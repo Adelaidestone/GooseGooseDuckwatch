@@ -12,5 +12,10 @@ services:
       - SCRAPER_CONCURRENCY=0
       - SCRAPER_RETRY_AFTER=5
       - CHROME_BIN=/usr/bin/chromium
+      - ARCHIVE_SEARCHMATCHES=false
     shm_size: "1g"
+    ulimits:
+      core:
+        soft: 0
+        hard: 0
     restart: unless-stopped
